@@ -145,7 +145,12 @@ app.post("/events", async (req, res) => {
 });
 
 
-//insert new sign up
+/**
+ * Inserts sign up.
+ * Provide uid of user and eid of event in request body as
+ * {uid: '', eid: ''}
+ * @returns JSON object of new sign up with attendance being false
+ */
 app.post("/sign-ups", async (req, res) => {
     var { uid, eid } = req.body;
     uid = parseInt(uid);
