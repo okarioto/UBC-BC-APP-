@@ -96,7 +96,6 @@ app.get("/sign-ups", async (req, res) => {
 app.post("/events", (req, res) => {
     // DB INSERT request into event table
 
-
 });
 
 //insert new user

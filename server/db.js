@@ -72,7 +72,48 @@ async function getSignUps(uid, eid) {
     }
 }
 
+/**
+ * Insert User
+ * @requires All imputs are sanitized
+ * @param {string} fname - first name.
+ * @param {string} lname - last name .
+ * @param {int} level - user level .
+ * @param {string} password - user password .
+ * @returns {JSON} The new user object
+ */
+async function insertUser(fname, lname, level, password) {
+    const query = `INSERT INTO users (fname, lname, user_level, user_password) VALUES ('${fname}', '${lname}', ${level}, '${password}') RETURNING *`
+    try {
+        const result = await pool.query(query);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error);
+    }
+    
+}
+
+/**
+ * Insert Event
+ * @requires All imputs are sanitized
+ * @param {string} location - event location .
+ * @param {string} date - event date 'YYYY-MM-DD'.
+ * @param {string} time - event time 'HH:MM:SS' .
+ * @returns {JSON} The new event object
+ */
+async function insertEvent(location, date, time) {
+    const query = `INSERT INTO events (event_location, event_time, event_date) VALUES ('${location}', '${time}', '${date}') RETURNING *`
+    try {
+        const result = await pool.query(query);
+        return result.rows[0];
+    } catch (error) {
+        throw new Error(error);
+    }
+    
+}
 
 
 
-export { getUsers, getEvents, getSignUps };
+
+
+
+export { getUsers, getEvents, getSignUps, insertUser, insertEvent };
