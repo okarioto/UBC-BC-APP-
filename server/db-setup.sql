@@ -14,7 +14,7 @@ event_date date,
 event_time time
 );
 
-CREATE TABLE signed_up(
+CREATE TABLE sign_ups(
     uid INT,
     eid INT,
 	attends bool DEFAULT false NOT NULL,
