@@ -127,9 +127,63 @@ async function insertSignUp(uid, eid) {
     }
 }
 
+/**
+ * Delete user
+ * @requires All imputs are sanitized
+ * @param {int} uid - user id.
+ * @returns {boolean} Result of deletion (true or false)
+ */
+async function deleteUser(uid) {
+    const query = `DELETE FROM users WHERE uid = ${uid}`;
+
+    try {
+        const result = await pool.query(query);
+        return (result.rowCount === 1)
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+/**
+ * Delete Event
+ * @requires All imputs are sanitized
+ * @param {int} eid - event id.
+ * @returns {boolean} Result of deletion (true or false)
+ */
+async function deleteEvent(eid) {
+    const query = `DELETE FROM events WHERE eid = ${eid}`;
+
+    try {
+        const result = await pool.query(query);
+        return (result.rowCount === 1)
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+/**
+ * Delete sign up
+ * @requires All imputs are sanitized
+ * @param {int} uid - user id.
+ * @param {int} eid - event id.
+ * @returns {boolean} Result of deletion (true or false)
+ */
+async function deleteSignUp(uid, eid) {
+    const query = `DELETE FROM sign_ups WHERE uid = ${uid} AND eid = ${eid}`;
+
+    try {
+        const result = await pool.query(query);
+        return (result.rowCount === 1)
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 
 
 
 
 
-export { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp };
+
+
+
+export { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp };

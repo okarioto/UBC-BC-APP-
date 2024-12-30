@@ -1,6 +1,5 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertEvent, insertUser, insertSignUp } from "./db.js"
-import e from "express";
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp,deleteUser, deleteEvent, deleteSignUp } from "./db.js"
 
 const app = express();
 const port = 3000;
@@ -168,21 +167,67 @@ app.post("/sign-ups", async (req, res) => {
     }
 })
 
-//delete event
-app.delete("/events", (req, res) => {
-    // DB DELETE req into event table
+
+/**
+ * Deletes event.
+ * Provide eid of event in request parameter
+ * @returns {boolean} True if sucessful delete
+ */
+app.delete("/events/:eid", async (req, res) => {
+    var { eid } = req.params;
+    eid = parseInt(eid);
+
+    if (eid === 0 || Number.isNaN(eid)) return res.status(400).send('Invalid event ID');
+
+    try {
+        const result = await deleteEvent(eid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
 });
 
-//delete user
-app.delete("/users", (req, res) => {
-    // DB DELETE request into user table
+/**
+ * Deletes user.
+ * Provide uid of user in request parameter
+ * @returns {boolean} True if sucessful delete
+ */
+app.delete("/users/:uid", async (req, res) => {
+    var { uid } = req.params;
+    uid = parseInt(uid);
 
+    if (uid === 0 || Number.isNaN(uid)) return res.status(400).send('Invalid user ID');
+
+    try {
+        const result = await deleteUser(uid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
 });
 
-//delete sign up
-app.delete("/sign-ups", (req, res) => {
-    // DB DELETE request into sign_ups table
+/**
+ * Deletes sign up.
+ * Provide uid of user and eid of event in query of request
+ * @returns {boolean} True if sucessful delete
+ */
+app.delete("/sign-ups/", async (req, res) => {
+    var { uid, eid } = req.query;
+    uid = parseInt(uid);
+    eid = parseInt(eid);
 
+    if (uid === 0 || Number.isNaN(uid)) return res.status(400).send('Invalid user ID');
+    if (eid === 0 || Number.isNaN(eid)) return res.status(400).send('Invalid event ID');
+
+    try {
+        const result = await deleteSignUp(uid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
 });
 
 
