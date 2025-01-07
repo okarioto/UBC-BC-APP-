@@ -1,9 +1,10 @@
 CREATE TABLE users (
 uid	serial PRIMARY KEY,
+email nvarchar(225) UNIQUE,
 fname varchar(255) NOT NULL,
 lname varchar(255) NOT NULL,
 user_level INT,
-user_password varchar(255) NOT NULL,
+user_password varchar(255) NOT NULL UNIQUE,
 noshow_count INT DEFAULT 0
 );
 

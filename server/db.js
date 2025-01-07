@@ -16,12 +16,28 @@ const pool = new pg.Pool({
  * @requires Direction and column are sanitized 
  * @param {string} direction - ASC or DESC.
  * @param {string} column - Column to sort by.
+ * @param {int} uid - uid to get by
+ * @param {string} email - email to get by
+ * @param {string} fname - first name to get by
+ * @param {string} lname - last name to get by
+ * @param {int} user_level - user level to get by
+ * @param {string} user_password - user password to get by
+ * @param {int} noshow_count - no show count to get by 
  * @returns {Array} Array of user objects
  */
-async function getUsers(direction, column) {
-    const query = `SELECT * FROM users ORDER BY ${column} ${direction}`
+async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count) {
+    uid ||= 'uid';
+    email = email ? "'" + email + "'" : "email";
+    fname = fname ? "'" + fname + "'" : "fname";
+    lname = lname ? "'" + lname + "'" : "lname";
+    user_level ||= 'user_level';
+    user_password = user_password ? "'" + user_password + "'" : "user_password";
+    noshow_count ||= 'noshow_count';
+
+    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} ORDER BY ${column} ${direction}`
     try {
         const result = await pool.query(query);
+        console.log(result.rows);
         return result.rows;
     } catch (error) {
         throw new Error(error);
@@ -74,7 +90,7 @@ async function getSignUps(uid, eid) {
 
 /**
  * Insert User
- * @requires All imputs are sanitized
+ * @requires All inputs are sanitized
  * @param {string} fname - first name.
  * @param {string} lname - last name .
  * @param {int} level - user level .

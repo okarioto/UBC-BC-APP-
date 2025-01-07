@@ -13,6 +13,11 @@ app.get("/", (req, res) => {
     res.send('Server is running!');;
 });
 
+function isValidName(name) {
+    const nameRegex = /^[\p{L}]+([\p{L} '-]*[\p{L}]+)?$/u; // Regex for names
+    return nameRegex.test(name.trim()) && name.length <= 100 && name.length >= 2;
+}
+
 //Create API endpoints for funtions
 
 /**
@@ -22,19 +27,35 @@ app.get("/", (req, res) => {
  * @returns Array of users
  */
 app.get("/users", async (req, res) => {
-    var { direction = 'ASC', column = 'uid' } = req.query;
+    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '0' } = req.query;
     direction ||= 'ASC';
     column ||= 'uid';
+    uid ||= '0'; 
+    uid = parseInt(uid);
+    email ||= '';
+    fname ||= '';
+    lname ||= '';
+    user_level ||= '0';
+    user_level = parseInt(user_level);
+    user_password ||= '';
+    noshow_count ||= '0';
+    noshow_count = parseInt(noshow_count);
 
     const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count'];
     const validDirections = ['ASC', 'DESC'];
+    if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
+    if (email != '' && (!email.includes('@') && email != 'email')) return res.status(400).send('Invalid email');
+    if (fname != '' && !isValidName(fname)) return res.status(400).send('Invalid first name');
+    if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
+    if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
+    if (user_password != '' && user_password.includes(';'));
 
     if (!validColumns.includes(column) || !validDirections.includes(direction)) {
         return res.status(400).send('Invalid Column or Direction');
     }
 
     try {
-        const result = await getUsers(direction, column);
+        const result = await getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count);
         res.send(result);
     } catch (error) {
         console.log(error);
