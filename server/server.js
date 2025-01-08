@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp,deleteUser, deleteEvent, deleteSignUp } from "./db.js"
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent } from "./db.js"
 
 const app = express();
 const port = 3000;
@@ -49,6 +49,7 @@ app.get("/users", async (req, res) => {
     if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
     if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
     if (user_password != '' && user_password.includes(';'));
+    if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
 
     if (!validColumns.includes(column) || !validDirections.includes(direction)) {
         return res.status(400).send('Invalid Column or Direction');
@@ -251,6 +252,68 @@ app.delete("/sign-ups/", async (req, res) => {
     }
 });
 
+/**
+ * Updates users
+ * Provide uid of user to update, and at least one value to be updated in query of request
+ * @requires values to be of the correct type
+ * @returns JSON object of updated user
+ */
+app.patch("/users", async (req, res) => {
+    var { uid, email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.query;
+    uid ||= '0'; 
+    uid = parseInt(uid);
+    email ||= '';
+    fname ||= '';
+    lname ||= '';
+    user_level ||= '0';
+    user_level = parseInt(user_level);
+    user_password ||= '';
+    if (noshow_count == 0) {
+        noshow_count = 0;
+    } else {
+        noshow_count ||= '0';
+    }
+    noshow_count = parseInt(noshow_count);
+
+    if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
+    if (email != '' && (!email.includes('@') && email != 'email')) return res.status(400).send('Invalid email');
+    if (fname != '' && !isValidName(fname)) return res.status(400).send('Invalid first name');
+    if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
+    if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
+    if (user_password != '' && user_password.includes(';'));
+    if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
+
+    try {
+        const result = await updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count);
+        res.send(result)
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
+
+/**
+ * Updates events
+ * Provide eid of event to update, and at least one value to be updated in query of request
+ * as 'YYYY-MM-DD' and 'HH:MM:SS' and 'location'
+ * @returns JSON object of updated event
+ */
+app.patch("/events", async (req, res) => {
+    var {eid, event_date = '', event_time = '', event_location = '' } = req.query;
+    console.log(req.query);
+    console.log(req.params);
+    if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
+    if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
+    if (event_location !== '' && (event_location.includes(';') || event_location.length > 255)) return res.status(400).send('Invalid location');
+
+    try {
+        const result = await updateEvent(eid, event_date, event_time, event_location);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
