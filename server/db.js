@@ -61,9 +61,10 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
 async function getEvents(event_date, event_time, event_location) {
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
+    event_location = event_location.toUpperCase();
     event_location = event_location ? "'" + event_location + "'" : "event_location";
 
-    const query = `SELECT eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location}) `;
+    const query = `SELECT eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE event_date = ${event_date} AND event_time = ${event_time} AND event_location = ${event_location}`;
     try {
         const result = await pool.query(query);
         return result.rows;
