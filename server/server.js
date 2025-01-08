@@ -27,7 +27,7 @@ function isValidName(name) {
  * @returns Array of users
  */
 app.get("/users", async (req, res) => {
-    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '0' } = req.query;
+    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '0', isAdmin = '' } = req.query;
     direction ||= 'ASC';
     column ||= 'uid';
     uid ||= '0'; 
@@ -40,23 +40,25 @@ app.get("/users", async (req, res) => {
     user_password ||= '';
     noshow_count ||= '0';
     noshow_count = parseInt(noshow_count);
+    isAdmin ||= '';
+    
 
-    const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count'];
+    const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count', 'isAdmin'];
     const validDirections = ['ASC', 'DESC'];
     if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
-    if (email != '' && (!email.includes('@') && email != 'email')) return res.status(400).send('Invalid email');
+    if (email != '' && !email.includes('@')) return res.status(400).send('Invalid email');
     if (fname != '' && !isValidName(fname)) return res.status(400).send('Invalid first name');
     if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
     if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
-    if (user_password != '' && user_password.includes(';'));
+    if (user_password != '' && user_password.includes(';')) return res.status(400).send('Invalid user_password');
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
+    if (isAdmin !== 'false' && isAdmin !== 'true' && isAdmin !== '') return res.status(400).send('Invalid isAdmin');
 
     if (!validColumns.includes(column) || !validDirections.includes(direction)) {
         return res.status(400).send('Invalid Column or Direction');
     }
-
     try {
-        const result = await getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count);
+        const result = await getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isAdmin);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -314,6 +316,42 @@ app.patch("/events", async (req, res) => {
         res.status(500).send(error);
     }
 })
+
+
+/**
+ * Authenticates users
+ * Provide email and password of user is request body 
+ * as {email: , user_password: }
+ * @returns JSON object with {isAuthenticated: bool, isAdmin: bool}
+ * !!! no session logic applied yet
+ */
+app.post("/login", async (req, res)=>{
+    const {email, user_password} = req.body;
+    if (email === '' || !email.includes('@')) return res.status(400).send('Invalid email');
+    if (user_password === '' || user_password.includes(';')) return res.status(400).send('Invalid user_password');
+
+    try {
+        var result = await getUsers("ASC", "uid", 0, email, "", "", 0, "", 0, "");
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send(error);
+    }
+    if(result.length === 0) return res.status(400).send('user not found');
+    if(result[0].user_password === user_password.toUpperCase()){
+        res.send({
+            isLoggedIn: true,
+            isadmin: result[0].isadmin,
+        })
+    } else {
+        res.send({
+            isLoggedIn: false
+        })
+    }
+})
+
+
+
+
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);

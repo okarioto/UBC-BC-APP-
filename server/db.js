@@ -10,11 +10,10 @@ const pool = new pg.Pool({
     password: process.env.DB_PASSWORD,
     port: process.env.DB_PORT,
 });
-
 /**
  * Gets users
  * @requires Direction, column, and all inputs are sanitized 
- * @requires use '' for arguements as wildcard when needed
+ * @requires use '' or 0 for arguements as wildcard when needed
  * @param {string} direction - ASC or DESC.
  * @param {string} column - Column to sort by.
  * @param {int} uid - uid to get by
@@ -24,21 +23,26 @@ const pool = new pg.Pool({
  * @param {int} user_level - user level to get by
  * @param {string} user_password - user password to get by
  * @param {int} noshow_count - no show count to get by 
+ * @param {string} isAdmin - admin privellege to get by
  * @returns {Array} Array of user objects
  */
-async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count) {
+async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isadmin) {
     uid ||= 'uid';
+    email = email.toUpperCase();
     email = email ? "'" + email + "'" : "email";
+    fname = fname.toUpperCase();
     fname = fname ? "'" + fname + "'" : "fname";
+    lname = lname.toUpperCase();
     lname = lname ? "'" + lname + "'" : "lname";
     user_level ||= 'user_level';
+    user_password = user_password.toUpperCase();
     user_password = user_password ? "'" + user_password + "'" : "user_password";
     noshow_count ||= 'noshow_count';
+    isadmin ||= "isadmin";
 
-    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} ORDER BY ${column} ${direction}`
+    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = ${email} AND fname = ${fname} AND lname = ${lname} AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
     try {
         const result = await pool.query(query);
-        console.log(result.rows);
         return result.rows;
     } catch (error) {
         throw new Error(error);
@@ -256,10 +260,6 @@ async function updateEvent(eid, event_date, event_time, event_location) {
         throw new Error(error);
     }
 }
-
-/**
- * 
- */
 
 
 
