@@ -32,15 +32,19 @@ CREATE TABLE sign_ups(
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('RIOTO@EMAIL.COM', 'RIOTO', 'OKA', 1, 'RIOTOPASS', 0, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 4, 'DOMPASS', 0, true);
+VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 3, 'DOMPASS', 0, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('KATHY@EMAIL.COM', 'KATHY', 'NGUYEN', 1, 'KATHYPASS', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 4, 'TYPASS', 0, false);
+VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 3, 'TYPASS', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('KEVIN@EMAIL.COM', 'KEVIN', 'TANG', 2, 'KEVINPASS', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, 'ANGUSPASS', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, 'KELVINPASS', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, 'AUSTINPASS', 0, false);
 
 
 INSERT INTO events (event_date, event_location, event_time)

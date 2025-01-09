@@ -13,7 +13,9 @@ const pool = new pg.Pool({
 /**
  * Gets users
  * @requires Direction, column, and all inputs are sanitized 
- * @requires use '' or 0 for arguements as wildcard when needed
+ * @requires use 0 for wildcard for uid and user_level
+ * @requires use '' for wildcard for string arguements a
+ * @requires use -1 for arguement as wildcard for no_show
  * @param {string} direction - ASC or DESC.
  * @param {string} column - Column to sort by.
  * @param {int} uid - uid to get by
@@ -28,19 +30,15 @@ const pool = new pg.Pool({
  */
 async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isadmin) {
     uid ||= 'uid';
-    email = email.toUpperCase();
     email = email ? "'" + email + "'" : "email";
-    fname = fname.toUpperCase();
     fname = fname ? "'" + fname + "'" : "fname";
-    lname = lname.toUpperCase();
     lname = lname ? "'" + lname + "'" : "lname";
     user_level ||= 'user_level';
-    user_password = user_password.toUpperCase();
     user_password = user_password ? "'" + user_password + "'" : "user_password";
-    noshow_count ||= 'noshow_count';
+    noshow_count === -1 && (noshow_count = 'noshow_count');
     isadmin ||= "isadmin";
 
-    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = ${email} AND fname = ${fname} AND lname = ${lname} AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
+    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = UPPER(${user_password}) AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -53,18 +51,19 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
  * Gets events
  * @requires All imputs are sanitized
  * @requires Use '' for arguments as wildcard when needed
+ * @param {int} eid
  * @param {string} event_date - 'YYYY-MM-DD'.
  * @param {string} event_time - 'HH:MM:SS'.
  * @param {string} event_location
  * @returns {Array} Array of event objects with specific event_date, event_time, event_location if specified
  */
-async function getEvents(event_date, event_time, event_location) {
+async function getEvents(eid, event_date, event_time, event_location) {
+    eid ||= 'eid';
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
-    event_location = event_location.toUpperCase();
     event_location = event_location ? "'" + event_location + "'" : "event_location";
 
-    const query = `SELECT eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE event_date = ${event_date} AND event_time = ${event_time} AND event_location = ${event_location}`;
+    const query = `SELECT eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE eid = ${eid} AND event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location})`;
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -97,14 +96,17 @@ async function getSignUps(uid, eid) {
 /**
  * Insert User
  * @requires All inputs are sanitized
+ * @param {string} email - email.
  * @param {string} fname - first name.
  * @param {string} lname - last name .
- * @param {int} level - user level .
- * @param {string} password - user password .
+ * @param {int} user_level - user level .
+ * @param {string} user_password - user password .
+ * @param {string} isAdmin - admin or not .
+ * 
  * @returns {JSON} The new user object
  */
-async function insertUser(fname, lname, level, password) {
-    const query = `INSERT INTO users (fname, lname, user_level, user_password) VALUES (UPPER('${fname}'), UPPER('${lname}'), ${level}, '${password}') RETURNING *`
+async function insertUser(email, fname, lname, user_level, user_password, isAdmin) {
+    const query = `INSERT INTO users (email, fname, lname, user_level, user_password, isadmin) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, UPPER('${user_password}'), ${isAdmin}) RETURNING *`
     try {
         const result = await pool.query(query);
         return result.rows[0];
@@ -204,7 +206,10 @@ async function deleteSignUp(uid, eid) {
 /**
  * Update user
  * @requires All inputs are sanitized
- * @requires use '' for arguements as wildcard when needed
+ * @requires use 0 for uid to change all users
+ * @requires use 0 for user_level as no change to user_level
+ * @requires use '' for arguements as no change to string arguments
+ * @requires use -1 for arguement as no change for no_show
  * @param {int} uid - uid to update by
  * @param {string} email - email to update to
  * @param {string} fname - first name to update to 
@@ -226,7 +231,7 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
         noshow_count = noshow_count;
     }
 
-    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count} WHERE uid = ${uid} RETURNING *`;
+    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = UPPER(${user_password}), noshow_count = ${noshow_count} WHERE uid = ${uid} RETURNING *`;
     try {
         const result = await pool.query(query);
         return result.rows[0];
@@ -238,7 +243,8 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
 /**
  * Update event
  * @requires All inputs are sanitized 
- * @requires use '' for arguements as wildcard when needed
+ * @requires use 0 for eid to change all events
+ * @requires use '' for arguements as no change to string arguments
  * @param {int} eid - event id of event to update
  * @param {string} event_location - event location .
  * @param {string} event_date - event date 'YYYY-MM-DD'.
@@ -246,11 +252,10 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
  * @returns {JSON} The new event object
  */
 async function updateEvent(eid, event_date, event_time, event_location) {
-    console.log(event_location);
+    eid = eid ? "'" + eid + "'" : "eid";
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
     event_location = event_location ? "'" + event_location + "'" : "event_location";
-    console.log(event_location);
 
     const query = `UPDATE events SET event_date = ${event_date}, event_time = ${event_time}, event_location = UPPER(${event_location}) WHERE eid = ${eid} RETURNING eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`;
     console.log(query);

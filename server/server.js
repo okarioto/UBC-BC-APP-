@@ -1,5 +1,6 @@
 import express from "express";
 import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent } from "./db.js"
+import jwt from "jsonwebtoken";
 
 const app = express();
 const port = 3000;
@@ -24,13 +25,14 @@ function isValidName(name) {
  * Gets users.
  * Provide direction and column in query of request
  * Default value is uid and ASC 
+ * Provide any of user attributes in query of request if wanting to get a specific group. 
  * @returns Array of users
  */
 app.get("/users", async (req, res) => {
-    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '0', isAdmin = '' } = req.query;
+    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isAdmin = '' } = req.query;
     direction ||= 'ASC';
     column ||= 'uid';
-    uid ||= '0'; 
+    uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
     fname ||= '';
@@ -38,10 +40,10 @@ app.get("/users", async (req, res) => {
     user_level ||= '0';
     user_level = parseInt(user_level);
     user_password ||= '';
-    noshow_count ||= '0';
+    noshow_count ||= '-1';
     noshow_count = parseInt(noshow_count);
     isAdmin ||= '';
-    
+
 
     const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count', 'isAdmin'];
     const validDirections = ['ASC', 'DESC'];
@@ -68,20 +70,23 @@ app.get("/users", async (req, res) => {
 
 /**
  * Gets events.
- * Provide date, time, location in query of request as 
- * 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' if needed
+ * Provide eid, event_date, event_time, event_location in query of request as 
+ * 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' as needed
  * @returns Array of events
  */
 app.get("/events", async (req, res) => {
-    var { date = '', time = '', location = '' } = req.query;
+    var {eid='0', event_date = '', event_time = '', event_location = '' } = req.query;
+    eid ||= '0';
+    eid = parseInt(eid);
 
-    if (date !== '' && (date.includes(';') || !date.includes('-') || date.length !== 10)) return res.status(400).send('Invalid Date');
-    if (time !== '' && (time.includes(';') || !time.includes(':') || time.length !== 8)) return res.status(400).send('Invalid Time');
-    if (location !== '' && (location.includes(';') || location.length > 255)) return res.status(400).send('Invalid location');
+    if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
+    if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
+    if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
+    if (event_location !== '' && (event_location.includes(';') || event_location.length > 255)) return res.status(400).send('Invalid location');
 
 
     try {
-        const result = await getEvents(date, time, location);
+        const result = await getEvents(eid, event_date, event_time, event_location);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -92,7 +97,7 @@ app.get("/events", async (req, res) => {
 
 /**
  * Gets sign-ups.
- * Provide eid and uid in query of request as int if needed
+ * Provide eid and uid in query of request as needed
  * @returns Array of sign-ups 
  */
 app.get("/sign-ups", async (req, res) => {
@@ -119,22 +124,24 @@ app.get("/sign-ups", async (req, res) => {
 
 /**
  * Inserts user.
- * Provide fname, lname, level, and password of user in request body as
- * {fname: '', lname: '', level: '', password: ''}
+ * Provide fname, lname, user_level, and password of user in request body as
+ * {email: '', fname: '', lname: '', user_level: '', user_password: '', isAdmin: ''}
+ * isAdmin is optional, default is false
  * @returns JSON object of new user
  */
 app.post("/users", async (req, res) => {
-    var { fname, lname, level, password } = req.body;
-    level = parseInt(level);
-
+    var { email='', fname='', lname='', user_level='', user_password='', isAdmin='false' } = req.body;
+    user_level = parseInt(user_level);
+    isAdmin ||= 'false';
+    if (!email || !email.includes('@')) return res.status(400).send('Invalid email');
     if (!fname || fname.includes(':') || fname.length > 255) return res.status(400).send('Invalid fname');
     if (!lname || lname.includes(':') || lname.length > 255) return res.status(400).send('Invalid lname');
-    //!!! what are valid levels?
-    if (Number.isNaN(level)) return res.status(400).send('Invalid level');
-    if (password.includes(';') || password.length > 255 || !password) return res.status(400).send('Invalid password');
+    if (Number.isNaN(user_level) || user_level < 1 || user_level > 3) return res.status(400).send('Invalid level');
+    if (user_password.includes(';') || user_password.length > 255 || !user_password) return res.status(400).send('Invalid password');
+    if (isAdmin !== 'false' && isAdmin !== 'true') return res.status(400).send('Invalid isAdmin');
 
     try {
-        const result = await insertUser(fname, lname, level, password);
+        const result = await insertUser(email, fname, lname, user_level, user_password, isAdmin);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -145,20 +152,20 @@ app.post("/users", async (req, res) => {
 /**
  * Inserts event.
  * Provide location, date, time of event in request body as
- * {location: '', date: '', time: ''}
+ * {event_location: '', event_date: '', event_time: ''}
  * @returns JSON object of new event
  */
 app.post("/events", async (req, res) => {
-    const { location, date, time } = req.body;
+    const { event_location, event_date, event_time } = req.body;
 
 
-    if (!date || date.includes(';') || !date.includes('-') || date.length !== 10) return res.status(400).send('Invalid Date');
-    if (!time || time.includes(';') || !time.includes(':') || time.length !== 8) return res.status(400).send('Invalid Time');
-    if (!location || location.includes(';') || location.length > 255) return res.status(400).send('Invalid location');
+    if (!event_date || event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10) return res.status(400).send('Invalid Date');
+    if (!event_time || event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8) return res.status(400).send('Invalid Time');
+    if (!event_location || event_location.includes(';') || event_location.length > 255) return res.status(400).send('Invalid location');
 
 
     try {
-        const result = await insertEvent(date, time, location);
+        const result = await insertEvent(event_date, event_time, event_location);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -237,7 +244,7 @@ app.delete("/users/:uid", async (req, res) => {
  * Provide uid of user and eid of event in query of request
  * @returns {boolean} True if sucessful delete
  */
-app.delete("/sign-ups/", async (req, res) => {
+app.delete("/sign-ups", async (req, res) => {
     var { uid, eid } = req.query;
     uid = parseInt(uid);
     eid = parseInt(eid);
@@ -257,12 +264,13 @@ app.delete("/sign-ups/", async (req, res) => {
 /**
  * Updates users
  * Provide uid of user to update, and at least one value to be updated in query of request
+ * If no uid is provided, all users will be updated
  * @requires values to be of the correct type
  * @returns JSON object of updated user
  */
 app.patch("/users", async (req, res) => {
-    var { uid, email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.query;
-    uid ||= '0'; 
+    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.query;
+    uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
     fname ||= '';
@@ -270,18 +278,14 @@ app.patch("/users", async (req, res) => {
     user_level ||= '0';
     user_level = parseInt(user_level);
     user_password ||= '';
-    if (noshow_count == 0) {
-        noshow_count = 0;
-    } else {
-        noshow_count ||= '0';
-    }
+    noshow_count ||= '-1';
     noshow_count = parseInt(noshow_count);
 
     if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
     if (email != '' && (!email.includes('@') && email != 'email')) return res.status(400).send('Invalid email');
     if (fname != '' && !isValidName(fname)) return res.status(400).send('Invalid first name');
     if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
-    if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
+    if (Number.isNaN(user_level) || user_level > 3 || user_level < 0) return res.status(400).send('Invalid user_level');
     if (user_password != '' && user_password.includes(';'));
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
 
@@ -298,12 +302,17 @@ app.patch("/users", async (req, res) => {
  * Updates events
  * Provide eid of event to update, and at least one value to be updated in query of request
  * as 'YYYY-MM-DD' and 'HH:MM:SS' and 'location'
+ * If no eid is provided, all events will be updated
  * @returns JSON object of updated event
  */
 app.patch("/events", async (req, res) => {
-    var {eid, event_date = '', event_time = '', event_location = '' } = req.query;
-    console.log(req.query);
-    console.log(req.params);
+    var { eid = '0', event_date = '', event_time = '', event_location = '' } = req.query;
+    eid ||='0';
+    eid = parseInt(eid);
+    event_date ||= '';
+    event_location ||= '';
+    event_time ||= '';
+    if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
     if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
     if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
     if (event_location !== '' && (event_location.includes(';') || event_location.length > 255)) return res.status(400).send('Invalid location');
@@ -322,11 +331,10 @@ app.patch("/events", async (req, res) => {
  * Authenticates users
  * Provide email and password of user is request body 
  * as {email: , user_password: }
- * @returns JSON object with {isAuthenticated: bool, isAdmin: bool}
- * !!! no session logic applied yet
+ * @returns JWT with payload {uid: ,email: , isAdmin: }
  */
-app.post("/login", async (req, res)=>{
-    const {email, user_password} = req.body;
+app.post("/login", async (req, res) => {
+    const { email, user_password } = req.body;
     if (email === '' || !email.includes('@')) return res.status(400).send('Invalid email');
     if (user_password === '' || user_password.includes(';')) return res.status(400).send('Invalid user_password');
 
@@ -336,17 +344,17 @@ app.post("/login", async (req, res)=>{
         console.log(error);
         return res.status(500).send(error);
     }
-    if(result.length === 0) return res.status(400).send('user not found');
-    if(result[0].user_password === user_password.toUpperCase()){
-        res.send({
-            isLoggedIn: true,
-            isadmin: result[0].isadmin,
-        })
-    } else {
-        res.send({
-            isLoggedIn: false
-        })
-    }
+    if (result.length === 0) return res.status(400).send('user not found');
+    if (result[0].user_password !== user_password.toUpperCase()) return res.status(401).send("wrong password");
+
+    const payload = {
+        uid: result[0].uid,
+        email: result[0].email,
+        isAdmin: result[0].isadmin,
+    };
+
+    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+    res.send({ token });
 })
 
 
