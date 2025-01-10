@@ -1,15 +1,10 @@
-
-
 function App() {
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          hi
-        </p>
-      </header>
-    </div>
-  );
+    <>
+    meow
+    </>
+  )
 }
 
-export default App;
+export default App
