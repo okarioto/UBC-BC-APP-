@@ -1,10 +1,11 @@
 import express from "express";
 import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent } from "./db.js"
 import jwt from "jsonwebtoken";
+import argon2 from "argon2";
 
 const app = express();
 const port = 3000;
-
+const secretKey = "mysecretkey"
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -123,13 +124,14 @@ app.get("/sign-ups", async (req, res) => {
 
 
 /**
- * Inserts user.
+ * Inserts new user.
  * Provide fname, lname, user_level, and password of user in request body as
  * {email: '', fname: '', lname: '', user_level: '', user_password: '', isAdmin: ''}
  * isAdmin is optional, default is false
+ * Encrypts password using argon2id
  * @returns JSON object of new user
  */
-app.post("/users", async (req, res) => {
+app.post("/register", async (req, res) => {
     var { email='', fname='', lname='', user_level='', user_password='', isAdmin='false' } = req.body;
     user_level = parseInt(user_level);
     isAdmin ||= 'false';
@@ -141,7 +143,14 @@ app.post("/users", async (req, res) => {
     if (isAdmin !== 'false' && isAdmin !== 'true') return res.status(400).send('Invalid isAdmin');
 
     try {
-        const result = await insertUser(email, fname, lname, user_level, user_password, isAdmin);
+        var hashed_password = await argon2.hash(user_password);
+    } catch (error) {
+        res.status(500).send(error)
+    }
+
+
+    try {
+        const result = await insertUser(email, fname, lname, user_level, hashed_password, isAdmin);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -345,16 +354,31 @@ app.post("/login", async (req, res) => {
         return res.status(500).send(error);
     }
     if (result.length === 0) return res.status(400).send('user not found');
-    if (result[0].user_password !== user_password.toUpperCase()) return res.status(401).send("wrong password");
+    const stored_pass = result[0].user_password;
 
-    const payload = {
-        uid: result[0].uid,
-        email: result[0].email,
-        isAdmin: result[0].isadmin,
-    };
+    try {
+        if (await argon2.verify(stored_pass, user_password)) {
+            // password match
+            const payload = {
+                uid: result[0].uid,
+                email: result[0].email,
+                isAdmin: result[0].isadmin,
+            };
 
-    const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
-    res.send({ token });
+            const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
+            res.send({ token });
+        } else {
+            // password did not match
+            return res.status(401).send("wrong password");
+        }
+    } catch (err) {
+        // internal failure
+        console.log(err);
+        return res.status(500).send(err);
+    }
+
+
+    
 })
 
 

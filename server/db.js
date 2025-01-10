@@ -38,7 +38,7 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
     noshow_count === -1 && (noshow_count = 'noshow_count');
     isadmin ||= "isadmin";
 
-    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = UPPER(${user_password}) AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
+    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -106,7 +106,8 @@ async function getSignUps(uid, eid) {
  * @returns {JSON} The new user object
  */
 async function insertUser(email, fname, lname, user_level, user_password, isAdmin) {
-    const query = `INSERT INTO users (email, fname, lname, user_level, user_password, isadmin) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, UPPER('${user_password}'), ${isAdmin}) RETURNING *`
+    const query = `INSERT INTO users (email, fname, lname, user_level, user_password, isadmin) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, '${user_password}', ${isAdmin}) RETURNING *`
+    console.log(query);
     try {
         const result = await pool.query(query);
         return result.rows[0];
@@ -231,7 +232,7 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
         noshow_count = noshow_count;
     }
 
-    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = UPPER(${user_password}), noshow_count = ${noshow_count} WHERE uid = ${uid} RETURNING *`;
+    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count} WHERE uid = ${uid} RETURNING *`;
     try {
         const result = await pool.query(query);
         return result.rows[0];

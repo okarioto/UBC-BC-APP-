@@ -8,7 +8,7 @@ email varchar(225) UNIQUE,
 fname varchar(255) NOT NULL,
 lname varchar(255) NOT NULL,
 user_level INT,
-user_password varchar(255) NOT NULL UNIQUE,
+user_password varchar(255) NOT NULL,
 noshow_count INT DEFAULT 0,
 isadmin bool DEFAULT false
 );
