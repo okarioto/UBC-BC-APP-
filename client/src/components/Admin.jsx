@@ -7,7 +7,7 @@ function Admin() {
   console.log(user);
   if (user.userID !== 0) {
     if (!user.isAdmin) {
-      return <h1>Logged in but Not admin </h1>;
+      return <h1>Logged in but not admin </h1>;
     } else {
       return <h1> Logged in and admin </h1>;
     }
