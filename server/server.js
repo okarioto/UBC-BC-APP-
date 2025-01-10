@@ -126,13 +126,12 @@ app.get("/sign-ups", async (req, res) => {
 /**
  * Inserts new user.
  * Provide fname, lname, user_level, and password of user in request body as
- * {email: '', fname: '', lname: '', user_level: '', user_password: '', isAdmin: ''}
- * isAdmin is optional, default is false
+ * {email: '', fname: '', lname: '', user_level: '', user_password: ''}
  * Encrypts password using argon2id
  * @returns JSON object of new user
  */
 app.post("/register", async (req, res) => {
-    var { email='', fname='', lname='', user_level='', user_password='', isAdmin='false' } = req.body;
+    var { email='', fname='', lname='', user_level='', user_password=''} = req.body;
     user_level = parseInt(user_level);
     isAdmin ||= 'false';
     if (!email || !email.includes('@')) return res.status(400).send('Invalid email');
@@ -140,7 +139,6 @@ app.post("/register", async (req, res) => {
     if (!lname || lname.includes(':') || lname.length > 255) return res.status(400).send('Invalid lname');
     if (Number.isNaN(user_level) || user_level < 1 || user_level > 3) return res.status(400).send('Invalid level');
     if (user_password.includes(';') || user_password.length > 255 || !user_password) return res.status(400).send('Invalid password');
-    if (isAdmin !== 'false' && isAdmin !== 'true') return res.status(400).send('Invalid isAdmin');
 
     try {
         var hashed_password = await argon2.hash(user_password);
@@ -150,7 +148,7 @@ app.post("/register", async (req, res) => {
 
 
     try {
-        const result = await insertUser(email, fname, lname, user_level, hashed_password, isAdmin);
+        const result = await insertUser(email, fname, lname, user_level, hashed_password);
         res.send(result);
     } catch (error) {
         console.log(error);
