@@ -4,6 +4,7 @@ import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./components/LogIn";
 import Dashboard from "./components/Dashboard";
 import Admin from "./components/Admin";
+import Register from "./components/Register";
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
           <Route path="/" element={<LogIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
     </AuthProvider>

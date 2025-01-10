@@ -145,10 +145,9 @@ app.get("/sign-ups", async (req, res) => {
 app.post("/register", async (req, res) => {
     var { email='', fname='', lname='', user_level='', user_password=''} = req.body;
     user_level = parseInt(user_level);
-    isAdmin ||= 'false';
     if (!email || !email.includes('@')) return res.status(400).send('Invalid email');
-    if (!fname || fname.includes(':') || fname.length > 255) return res.status(400).send('Invalid fname');
-    if (!lname || lname.includes(':') || lname.length > 255) return res.status(400).send('Invalid lname');
+    if (!fname || fname.includes(';') || fname.length > 255) return res.status(400).send('Invalid fname');
+    if (!lname || lname.includes(';') || lname.length > 255) return res.status(400).send('Invalid lname');
     if (Number.isNaN(user_level) || user_level < 1 || user_level > 3) return res.status(400).send('Invalid level');
     if (user_password.includes(';') || user_password.length > 255 || !user_password) return res.status(400).send('Invalid password');
 

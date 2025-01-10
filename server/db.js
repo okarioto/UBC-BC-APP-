@@ -104,8 +104,8 @@ async function getSignUps(uid, eid) {
  * 
  * @returns {JSON} The new user object
  */
-async function insertUser(email, fname, lname, user_level, user_password, isAdmin) {
-    const query = `INSERT INTO users (email, fname, lname, user_level, user_password, isadmin) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, '${user_password}') RETURNING *`
+async function insertUser(email, fname, lname, user_level, user_password) {
+    const query = `INSERT INTO users (email, fname, lname, user_level, user_password) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, '${user_password}') RETURNING *`
     console.log(query);
     try {
         const result = await pool.query(query);

@@ -7,9 +7,10 @@ import { jwtDecode } from "jwt-decode";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function LogIn() {
-  const { user, setUser } = useContext(AuthContext);
+  const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
-  const handleSubmit = async (event) => {
+
+  async function handleSubmit(event) {
     event.preventDefault();
     const inputEmail = event.target.email.value;
     const inputPassword = event.target.password.value;
@@ -26,7 +27,7 @@ function LogIn() {
     } catch (error) {
       console.log(error);
     }
-  };
+  }
 
   function logOut() {
     localStorage.removeItem("token");
@@ -36,8 +37,8 @@ function LogIn() {
     <div>
       hi
       <form onSubmit={handleSubmit}>
-        <input type="text" placeholder="email" name="email" />
-        <input type="text" placeholder="password" name="password" />
+        <input type="email" placeholder="email" name="email" />
+        <input type="password" placeholder="password" name="password" />
         <button type="submit">Log in</button>
       </form>
       <button onClick={logOut}> log out </button>
