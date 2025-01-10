@@ -4,6 +4,8 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
+const apiUrl = import.meta.env.VITE_API_URL;
+
 function LogIn() {
   const { user, setUser } = useContext(AuthContext);
   const navigate = useNavigate();
@@ -13,7 +15,7 @@ function LogIn() {
     const inputPassword = event.target.password.value;
 
     try {
-      const result = await axios.post("http://localhost:3000/login", {
+      const result = await axios.post(`${apiUrl}/login`, {
         email: inputEmail,
         user_password: inputPassword,
       });
@@ -28,6 +30,7 @@ function LogIn() {
 
   function logOut() {
     localStorage.removeItem("token");
+    setUser({ userID: 0, email: "", isAdmin: false });
   }
   return (
     <div>
