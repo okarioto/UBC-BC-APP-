@@ -28,23 +28,23 @@ CREATE TABLE sign_ups(
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
 );
 
-
+--PASSWORD IS SAME AS FNAME
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('RIOTO@EMAIL.COM', 'RIOTO', 'OKA', 1, 'RIOTOPASS', 0, true);
+VALUES ('RIOTO@EMAIL.COM', 'RIOTO', 'OKA', 1, '$argon2id$v=19$m=65536,t=3,p=4$b8GbVXfG+/Zjvg1EaSzrtQ$ux69PKmoQ6W1lxvpqAF3PhTpD3xwG48Zj8bHd6sxbdw', 0, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 3, 'DOMPASS', 0, true);
+VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 3, '$argon2id$v=19$m=65536,t=3,p=4$b0XKD0UPMZxJ0lzdktdr7g$IEjKvqIL7FCY3voQjFawBH+1aYkNtKNLIBcGEURknXE', 0, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('KATHY@EMAIL.COM', 'KATHY', 'NGUYEN', 1, 'KATHYPASS', 0, false);
+VALUES ('KATHY@EMAIL.COM', 'KATHY', 'NGUYEN', 1, '$argon2id$v=19$m=65536,t=3,p=4$nSiX3FGn2xMUq8c31Bbj0Q$K3yPuToZARsNDpiFVILjySVF/bKBQmBt4JuGyoVAFEM', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 3, 'TYPASS', 0, false);
+VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 3, '$argon2id$v=19$m=65536,t=3,p=4$MhWwk6RbDs/zlku/4xKSgA$A2DR+612wV9FrKYPHHDLbY2ma7Bx8qWYxeBnGK7BWNk', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('KEVIN@EMAIL.COM', 'KEVIN', 'TANG', 2, 'KEVINPASS', 0, false);
+VALUES ('KEVIN@EMAIL.COM', 'KEVIN', 'TANG', 2, '$argon2id$v=19$m=65536,t=3,p=4$K349pyr7t1FHPGCS0GjLcg$fmfSEN/xjWNojNPT3v+asmLNl4L4SGxX4qPWbP+s4qU', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, 'ANGUSPASS', 0, false);
+VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, '$argon2id$v=19$m=65536,t=3,p=4$7Ss9Cf5CuigjRveAzx/vmg$7mJffXRfp16ji7+PAFL0nJmuv7wg4k3HnBlBrcfGl8I', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, 'KELVINPASS', 0, false);
+VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, '$argon2id$v=19$m=65536,t=3,p=4$557yvAllYHulVFE4n/idyw$e0vJLVP/6zU4f66dxK8C52sS0pirG4QnBTChB99BpG0', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, 'AUSTINPASS', 0, false);
+VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, '$argon2id$v=19$m=65536,t=3,p=4$84GuPhY+7gCAM8iLdYN2uQ$wSMdFD5lWO4MKq0+gyhf06ToxqO3SDZZdxkjXofxgA0', 0, false);
 
 
 INSERT INTO events (event_date, event_location, event_time)

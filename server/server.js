@@ -3,6 +3,9 @@ import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp,
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
+import env from "dotenv";
+
+
 
 const corsOptions = {
     origin: 'http://localhost:5173',
@@ -10,10 +13,10 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
-
+env.config();
 const app = express();
 const port = 3000;
-const secretKey = "mysecretkey"
+const secretKey = process.env.JWT_KEY
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
