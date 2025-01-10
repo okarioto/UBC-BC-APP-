@@ -2,6 +2,14 @@ import express from "express";
 import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent } from "./db.js"
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
+import cors from 'cors';
+
+const corsOptions = {
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+};
+
 
 const app = express();
 const port = 3000;
@@ -9,6 +17,7 @@ const secretKey = "mysecretkey"
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
+app.use(cors(corsOptions));
 
 
 app.get("/", (req, res) => {
