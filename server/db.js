@@ -55,15 +55,17 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
  * @param {string} event_date - 'YYYY-MM-DD'.
  * @param {string} event_time - 'HH:MM:SS'.
  * @param {string} event_location
- * @returns {Array} Array of event objects with specific event_date, event_time, event_location if specified
+ * @param {string} event_name
+ * @returns {Array} Array of event objects with specific event_date, event_time, event_location, event_name if specified
  */
-async function getEvents(eid, event_date, event_time, event_location) {
+async function getEvents(eid, event_date, event_time, event_location, event_name) {
     eid ||= 'eid';
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
     event_location = event_location ? "'" + event_location + "'" : "event_location";
+    event_name = event_name ? "'" + event_name + "'" : "event_name";
 
-    const query = `SELECT eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE eid = ${eid} AND event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location})`;
+    const query = `SELECT eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE eid = ${eid} AND event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location}) AND event_name = UPPER(${event_name})`;
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -119,13 +121,14 @@ async function insertUser(email, fname, lname, user_level, user_password) {
 /**
  * Insert Event
  * @requires All imputs are sanitized
+ * @param {string} event_name - event name .
  * @param {string} event_location - event location .
  * @param {string} event_date - event date 'YYYY-MM-DD'.
  * @param {string} event_time - event time 'HH:MM:SS' .
  * @returns {JSON} The new event object
  */
-async function insertEvent(event_date, event_time, event_location) {
-    const query = `INSERT INTO events (event_location, event_time, event_date) VALUES (UPPER('${event_location}'), '${event_time}', '${event_date}') RETURNING eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`
+async function insertEvent(event_date, event_time, event_location, event_name) {
+    const query = `INSERT INTO events (event_location, event_time, event_date, event_name) VALUES (UPPER('${event_location}'), '${event_time}', '${event_date}', UPPER('${event_name}')) RETURNING eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`
     try {
         const result = await pool.query(query);
         return result.rows[0];
@@ -247,18 +250,19 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
  * @requires use '' for arguements as no change to string arguments
  * @param {int} eid - event id of event to update
  * @param {string} event_location - event location .
+ * @param {string} event_name - event name .
  * @param {string} event_date - event date 'YYYY-MM-DD'.
  * @param {string} event_time - event time 'HH:MM:SS' .
  * @returns {JSON} The new event object
  */
-async function updateEvent(eid, event_date, event_time, event_location) {
+async function updateEvent(eid, event_date, event_time, event_location, event_name) {
     eid = eid ? "'" + eid + "'" : "eid";
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
     event_location = event_location ? "'" + event_location + "'" : "event_location";
+    event_name = event_name ? "'" + event_name + "'" : "event_name";
 
-    const query = `UPDATE events SET event_date = ${event_date}, event_time = ${event_time}, event_location = UPPER(${event_location}) WHERE eid = ${eid} RETURNING eid, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`;
-    console.log(query);
+    const query = `UPDATE events SET event_date = ${event_date}, event_time = ${event_time}, event_location = UPPER(${event_location}), event_name = UPPER(${event_name}) WHERE eid = ${eid} RETURNING eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`;
     try {
         const result = await pool.query(query);
         return result.rows;

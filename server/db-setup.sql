@@ -15,6 +15,7 @@ isadmin bool DEFAULT false
 
 CREATE TABLE events (
 eid	serial PRIMARY KEY,
+event_name varchar(255) DEFAULT "DROP-IN"
 event_location varchar(255) NOT NULL,
 event_date date,
 event_time time

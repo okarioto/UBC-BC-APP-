@@ -83,12 +83,12 @@ app.get("/users", async (req, res) => {
 
 /**
  * Gets events.
- * Provide eid, event_date, event_time, event_location in query of request as 
- * 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' as needed
+ * Provide eid, event_date, event_time, event_location, event_name in query of request as 
+ * 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' and 'name' as needed
  * @returns Array of events
  */
 app.get("/events", async (req, res) => {
-    var {eid='0', event_date = '', event_time = '', event_location = '' } = req.query;
+    var { eid = '0', event_date = '', event_time = '', event_location = '', event_name = '' } = req.query;
     eid ||= '0';
     eid = parseInt(eid);
 
@@ -96,10 +96,11 @@ app.get("/events", async (req, res) => {
     if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
     if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
     if (event_location !== '' && (event_location.includes(';') || event_location.length > 255)) return res.status(400).send('Invalid location');
+    if (event_name !== '' && (event_location.includes(';') || event_name.length > 255)) return res.status(400).send('Invalid event name');
 
 
     try {
-        const result = await getEvents(eid, event_date, event_time, event_location);
+        const result = await getEvents(eid, event_date, event_time, event_location, event_name);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -143,7 +144,7 @@ app.get("/sign-ups", async (req, res) => {
  * @returns JSON object of new user
  */
 app.post("/register", async (req, res) => {
-    var { email='', fname='', lname='', user_level='', user_password=''} = req.body;
+    var { email = '', fname = '', lname = '', user_level = '', user_password = '' } = req.body;
     user_level = parseInt(user_level);
     if (!email || !email.includes('@')) return res.status(400).send('Invalid email');
     if (!fname || fname.includes(';') || fname.length > 255) return res.status(400).send('Invalid fname');
@@ -170,20 +171,23 @@ app.post("/register", async (req, res) => {
 /**
  * Inserts event.
  * Provide location, date, time of event in request body as
- * {event_location: '', event_date: '', event_time: ''}
+ * {event_location: '', event_date: '', event_time: '', event_name: ''}
+ * Defualt event name is DROP-IN
  * @returns JSON object of new event
  */
 app.post("/events", async (req, res) => {
-    const { event_location, event_date, event_time } = req.body;
+    var { event_location, event_date, event_time, event_name = 'DROP-IN' } = req.body;
+    event_name ||= 'DROP-IN';
 
 
     if (!event_date || event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10) return res.status(400).send('Invalid Date');
     if (!event_time || event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8) return res.status(400).send('Invalid Time');
     if (!event_location || event_location.includes(';') || event_location.length > 255) return res.status(400).send('Invalid location');
+    if (!event_name || event_name.includes(';') || event_name.length > 255) return res.status(400).send('Invalid event name');
 
 
     try {
-        const result = await insertEvent(event_date, event_time, event_location);
+        const result = await insertEvent(event_date, event_time, event_location, event_name);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -319,24 +323,26 @@ app.patch("/users", async (req, res) => {
 /**
  * Updates events
  * Provide eid of event to update, and at least one value to be updated in query of request
- * as 'YYYY-MM-DD' and 'HH:MM:SS' and 'location'
+ * as 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' and 'name'
  * If no eid is provided, all events will be updated
  * @returns JSON object of updated event
  */
 app.patch("/events", async (req, res) => {
-    var { eid = '0', event_date = '', event_time = '', event_location = '' } = req.query;
-    eid ||='0';
+    var { eid = '0', event_date = '', event_time = '', event_location = '', event_name = '' } = req.query;
+    eid ||= '0';
     eid = parseInt(eid);
     event_date ||= '';
     event_location ||= '';
     event_time ||= '';
+    event_name ||= '';
     if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
     if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
     if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
     if (event_location !== '' && (event_location.includes(';') || event_location.length > 255)) return res.status(400).send('Invalid location');
+    if (event_name !== '' && (event_name.includes(';') || event_name.length > 255)) return res.status(400).send('Invalid event name');
 
     try {
-        const result = await updateEvent(eid, event_date, event_time, event_location);
+        const result = await updateEvent(eid, event_date, event_time, event_location, event_name);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -387,7 +393,7 @@ app.post("/login", async (req, res) => {
     }
 
 
-    
+
 })
 
 
