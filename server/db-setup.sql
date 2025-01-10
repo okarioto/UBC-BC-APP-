@@ -15,7 +15,7 @@ isadmin bool DEFAULT false
 
 CREATE TABLE events (
 eid	serial PRIMARY KEY,
-event_name varchar(255) DEFAULT "DROP-IN"
+event_name varchar(255) DEFAULT 'DROP-IN',
 event_location varchar(255) NOT NULL,
 event_date date,
 event_time time
@@ -28,6 +28,33 @@ CREATE TABLE sign_ups(
     FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
 );
+
+CREATE OR REPLACE FUNCTION enforce_max_sign_ups()
+RETURNS TRIGGER AS $$
+DECLARE
+    max_sign_ups INT := 50; 
+    current_count INT;       
+BEGIN
+    SELECT COUNT(*) INTO current_count
+    FROM sign_ups
+    WHERE eid = NEW.eid;
+
+    IF current_count >= max_sign_ups THEN
+        RAISE EXCEPTION 'Maximum number of sign_ups for eid % exceeded', NEW.eid;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER check_max_sign_ups
+BEFORE INSERT ON sign_ups
+FOR EACH ROW
+EXECUTE FUNCTION enforce_max_sign_ups();
+
+
+
 
 --PASSWORD IS SAME AS FNAME
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
