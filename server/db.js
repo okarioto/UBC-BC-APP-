@@ -108,12 +108,11 @@ async function getSignUps(uid, eid) {
  */
 async function insertUser(email, fname, lname, user_level, user_password) {
     const query = `INSERT INTO users (email, fname, lname, user_level, user_password) VALUES (UPPER('${email}'), UPPER('${fname}'), UPPER('${lname}'), ${user_level}, '${user_password}') RETURNING *`
-    console.log(query);
     try {
         const result = await pool.query(query);
         return result.rows[0];
     } catch (error) {
-        throw new Error(error);
+        throw new Error("In DB:", {cause: {code: error.code, detail: error.detail}});
     }
 
 }

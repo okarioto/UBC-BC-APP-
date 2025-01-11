@@ -155,7 +155,7 @@ app.post("/register", async (req, res) => {
     try {
         var hashed_password = await argon2.hash(user_password);
     } catch (error) {
-        res.status(500).send(error)
+        res.status(500).send(error);
     }
 
 
@@ -163,8 +163,11 @@ app.post("/register", async (req, res) => {
         const result = await insertUser(email, fname, lname, user_level, hashed_password);
         res.send(result);
     } catch (error) {
-        console.log(error);
-        res.status(500).send(error);
+        if(error.cause.code === "23505"){
+            res.status(400).send({message:"user already exists", code: 23505});
+        }else{
+            res.status(500).send({ message: "something went wrong", code: error.cause.detail });
+        }
     }
 });
 

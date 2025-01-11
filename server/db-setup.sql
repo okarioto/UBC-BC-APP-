@@ -29,6 +29,10 @@ CREATE TABLE sign_ups(
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
 );
 
+SELECT *
+FROM sign_ups s, events e
+WHERE e.event_date="curr_date", e.eid !="curr_eid" , e.eid = s.eid, s.uid = "curr_uid"
+
 CREATE OR REPLACE FUNCTION enforce_max_sign_ups()
 RETURNS TRIGGER AS $$
 DECLARE
