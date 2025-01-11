@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* *{
+    border: 1px red solid
+} */
+
+.input-box {
+    @apply bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg;
+}

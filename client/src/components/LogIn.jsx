@@ -32,6 +32,7 @@ function LogIn() {
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex flex-col min-h-1/2 w-[85%] max-w-[30rem] items-center">
+      <div className="w-32 h-32"><img src="/logo.svg" alt="" /></div>
         <h2 className="tracking-tight font-bold text-xl mb-7">
           Log In or Sign Up
         </h2>
@@ -43,13 +44,13 @@ function LogIn() {
             type="email"
             placeholder="email"
             name="email"
-            className="bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg"
+            className="input-box"
           />
           <input
             type="password"
             placeholder="password"
             name="password"
-            className="bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg"
+            className="input-box"
           />
           <button
             type="submit"
@@ -66,10 +67,10 @@ function LogIn() {
           <button>Sign Up</button>
         </a>
 
-        <a href="!!!" className="mt-3  text-gray-300">
+        {/* <a href="!!!" className="mt-3  text-gray-300">
           {" "}
           forgot password{" "}
-        </a>
+        </a> */}
       </div>
     </div>
   );
