@@ -1,12 +1,14 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function LogIn() {
+  const [isError, setIsError] = useState(false)
+  const [errorMsg, setErrorMsg] = useState("")
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -25,7 +27,9 @@ function LogIn() {
       setUser(jwtDecode(result.data.token));
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
+      setIsError(true);
+      if(error.status >= 500 ) setErrorMsg("Something went wrong, please try again");
+      setErrorMsg(error.response.data);
     }
   }
 
@@ -46,19 +50,23 @@ function LogIn() {
             type="email"
             placeholder="email"
             name="email"
-            className=" bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg duration-[5000s]"
+            className={`bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg
+            duration-[50000s]`}
           />
           <input
             type="password"
             placeholder="password"
             name="password"
-            className=" bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg duration-[5000s]"
+            className=" bg-gray-200 rounded-xl h-[3rem] w-[75%] mb-7 p-3 shadow-lg duration-[50000s]"
           />
+          <p className="text-[12px] text-[#cc0000] mb-3 text-center">
+            {errorMsg}
+          </p>
           <button
             type="submit"
             className="bg-black text-white font-bold rounded-xl h-[3rem] w-[75%] shadow-lg hover:bg-opacity-80 duration-500"
           >
-            Log in
+            {isError ? "Try Again" : "Log In"}
           </button>
         </form>
         <p className="mb-3 mt-3 text-gray-300">or</p>
@@ -66,13 +74,8 @@ function LogIn() {
           href="/register"
           className="flex justify-center items-center bg-white text-black font-bold border-2 border-black rounded-xl h-[3rem] w-[75%] hover:bg-gray-300  duration-500"
         >
-          <button>Sign Up</button>
+          <button> Sign Up </button>
         </a>
-
-        {/* <a href="!!!" className="mt-3  text-gray-300">
-          {" "}
-          forgot password{" "}
-        </a> */}
       </div>
     </div>
   );

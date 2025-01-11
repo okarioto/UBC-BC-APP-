@@ -7,8 +7,13 @@ export default function Register() {
   const [isError, setIsError] = useState(false);
   const [userExists, setUserExists] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+
   async function handleSubmit(event) {
     event.preventDefault();
+    setIsError(false);
+    setUserExists(false);
+    setIsSuccess(false);
     const inputFname = event.target.fname.value;
     const inputLname = event.target.lname.value;
     const inputLevel = event.target.user_level.value;
@@ -25,11 +30,12 @@ export default function Register() {
       });
       setIsSuccess(true);
     } catch (error) {
-      console.log(error.response.data.message);
-      if (error.response.data.code === 23505) {
+      console.log(error.response.data);
+      if (error.status === 404) {
         setUserExists(true);
       } else {
         setIsError(true);
+        setErrorMsg(error.response.data);
       }
     }
   }
@@ -180,18 +186,17 @@ export default function Register() {
               href="/"
               className="bg-black text-white font-bold rounded-xl h-[3rem] w-[75%] mb-3 shadow-lg hover:bg-opacity-70 duration-500 flex justify-center items-center"
             >
-              {" "}
-              Go To Login{" "}
+              Go To Login
             </a>
           )}
           {isError && (
             <p className="text-[10px] font-light text-[#cc0000] mb-3 text-center">
-              There was an error registering, please wait a while and try again.
+              {errorMsg}
             </p>
           )}
           {userExists && (
             <p className="text-[10px] font-light text-[#cc0000] mb-3 text-center">
-              This email is already associated with an user.{" "}
+              This email is already associated with an user. 
               <a href="mailto:example@email.com" className="underline">
                 Forgot password?
               </a>

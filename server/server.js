@@ -147,8 +147,8 @@ app.post("/register", async (req, res) => {
     var { email = '', fname = '', lname = '', user_level = '', user_password = '' } = req.body;
     user_level = parseInt(user_level);
     if (!email || !email.includes('@')) return res.status(400).send('Invalid email');
-    if (!fname || fname.includes(';') || fname.length > 255) return res.status(400).send('Invalid fname');
-    if (!lname || lname.includes(';') || lname.length > 255) return res.status(400).send('Invalid lname');
+    if (!fname || fname.includes(';') || fname.length > 255) return res.status(400).send('Invalid first name');
+    if (!lname || lname.includes(';') || lname.length > 255) return res.status(400).send('Invalid last name');
     if (Number.isNaN(user_level) || user_level < 1 || user_level > 3) return res.status(400).send('Invalid level');
     if (user_password.includes(';') || user_password.length > 255 || !user_password) return res.status(400).send('Invalid password');
 
@@ -164,9 +164,9 @@ app.post("/register", async (req, res) => {
         res.send(result);
     } catch (error) {
         if(error.cause.code === "23505"){
-            res.status(400).send({message:"user already exists", code: 23505});
+            res.status(404).send("User already exists");
         }else{
-            res.status(500).send({ message: "something went wrong", code: error.cause.detail });
+            res.status(500).send("Something went wrong");
         }
     }
 });
@@ -363,7 +363,7 @@ app.patch("/events", async (req, res) => {
 app.post("/login", async (req, res) => {
     const { email, user_password } = req.body;
     if (email === '' || !email.includes('@')) return res.status(400).send('Invalid email');
-    if (user_password === '' || user_password.includes(';')) return res.status(400).send('Invalid user_password');
+    if (user_password === '' || user_password.includes(';')) return res.status(400).send('Invalid password');
 
     try {
         var result = await getUsers("ASC", "uid", 0, email, "", "", 0, "", 0, "");
@@ -371,7 +371,7 @@ app.post("/login", async (req, res) => {
         console.log(error);
         return res.status(500).send(error);
     }
-    if (result.length === 0) return res.status(400).send('user not found');
+    if (result.length === 0) return res.status(404).send('User not found');
     const stored_pass = result[0].user_password;
 
     try {
@@ -387,7 +387,7 @@ app.post("/login", async (req, res) => {
             res.send({ token });
         } else {
             // password did not match
-            return res.status(401).send("wrong password");
+            return res.status(401).send("Wrong Password");
         }
     } catch (err) {
         // internal failure
