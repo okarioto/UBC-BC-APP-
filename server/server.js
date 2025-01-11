@@ -379,6 +379,8 @@ app.post("/login", async (req, res) => {
             // password match
             const payload = {
                 uid: result[0].uid,
+                fname: result[0].fname,
+                lname: result[0].lname,
                 email: result[0].email,
                 isAdmin: result[0].isadmin,
             };
