@@ -1,13 +1,20 @@
 import axios from "axios";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import BlackBtn from "../components/Black_Btn";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Register() {
+  const navigate = useNavigate();
   const [isError, setIsError] = useState(false);
   const [userExists, setUserExists] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+
+  function goToLogin() {
+    navigate("/");
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -42,7 +49,7 @@ export default function Register() {
 
   return (
     <div className="flex justify-center items-center min-h-screen">
-      <div className="w-[85%] max-w-[30rem] flex flex-col items-center mt-10">
+      <div className="w-[80%] max-w-[30rem] flex flex-col items-center mt-10">
         <div className="w-full">
           <h2 className="tracking-wider font-bold mb-5 text-gray-600 text-xl">
             Your Info
@@ -174,36 +181,26 @@ export default function Register() {
           </div>
 
           {!userExists && !isSuccess && (
-            <button
-              type="submit"
-              className="bg-black  text-white font-bold rounded-xl h-[3rem] w-[75%] mb-4 shadow-lg hover:bg-opacity-70 duration-500"
-            >
-              {isError ? "Try Again" : "Sign Up"}
-            </button>
+            <BlackBtn type="sumbit" text={isError ? "Try Again" : "Sign Up"} />
           )}
           {(userExists || isSuccess) && (
-            <a
-              href="/"
-              className="bg-black text-white font-bold rounded-xl h-[3rem] w-[75%] mb-3 shadow-lg hover:bg-opacity-70 duration-500 flex justify-center items-center"
-            >
-              Go To Login
-            </a>
+            <BlackBtn onClick={goToLogin} text="Go To Login" />
           )}
           {isError && (
-            <p className="text-[10px] font-light text-[#cc0000] mb-3 text-center">
+            <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
               {errorMsg}
             </p>
           )}
           {userExists && (
-            <p className="text-[10px] font-light text-[#cc0000] mb-3 text-center">
-              This email is already associated with an user. 
+            <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
+              This email is already associated with an user.
               <a href="mailto:example@email.com" className="underline">
                 Forgot password?
               </a>
             </p>
           )}
           {isSuccess && (
-            <p className="text-[10px] font-light text-green-700 mb-3 text-center">
+            <p className="text-[10px] font-light text-green-700 mt-3 text-center">
               Success !
             </p>
           )}

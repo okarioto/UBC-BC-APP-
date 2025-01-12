@@ -3,12 +3,13 @@ import { useNavigate } from "react-router-dom";
 import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import BlackBtn from "../components/Black_Btn";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function LogIn() {
-  const [isError, setIsError] = useState(false)
-  const [errorMsg, setErrorMsg] = useState("")
+  const [isError, setIsError] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
   const { setUser } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -28,14 +29,19 @@ function LogIn() {
       navigate("/dashboard");
     } catch (error) {
       setIsError(true);
-      if(error.status >= 500 ) setErrorMsg("Something went wrong, please try again");
+      if (error.status >= 500)
+        setErrorMsg("Something went wrong, please try again");
       setErrorMsg(error.response.data);
+    }
+
+    function goToRegister() {
+      navigate("/register");
     }
   }
 
   return (
     <div className="min-h-screen flex justify-center items-center">
-      <div className="flex flex-col min-h-1/2 w-[85%] max-w-[30rem] items-center">
+      <div className="flex flex-col min-h-1/2 w-[80%] max-w-[30rem] items-center">
         <div className="w-32 h-32">
           <img src="/logo.svg" alt="" />
         </div>
@@ -62,12 +68,7 @@ function LogIn() {
           <p className="text-[12px] text-[#cc0000] mb-3 text-center">
             {errorMsg}
           </p>
-          <button
-            type="submit"
-            className="bg-black text-white font-bold rounded-xl h-[3rem] w-[75%] shadow-lg hover:bg-opacity-80 duration-500"
-          >
-            {isError ? "Try Again" : "Log In"}
-          </button>
+          <BlackBtn type="submit" text={isError ? "Try Again" : "Log In"} />
         </form>
         <p className="mb-3 mt-3 text-gray-300">or</p>
         <a
