@@ -419,21 +419,21 @@ app.post("/login", async (req, res) => {
 })
 
 /**
- * Gets the upcoming and past events associated with a given date.
- * Events on the given date are treated as upcoming
- * Provide the current date as 'yyyy-mm-dd'. 
- * given value will be returned.
+ * Gets the upcoming and past events associated with a given date and time.
+ * Events on the given date and given time are treated as upcoming
+ * Provide the date as 'yyyy-mm-dd', time as 'hh:mm:ss'. 
  * @requires values to be of the correct type and not null
  * @returns an array of two JSON arrays, first entry is upcoming events,
  * second entry is past events
  */
 app.get("/upcoming-and-past-events", async (req, res) => {
-    var { event_date = '' } = req.query;
+    var { event_date = '', event_time = '' } = req.query;
 
     if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
+    if (event_time !== '' && (event_time.includes(';') || !event_time.includes(':') || event_time.length !== 8)) return res.status(400).send('Invalid Time');
 
     try {
-        const result = await getUpcomingPastEvents(event_date);
+        const result = await getUpcomingPastEvents(event_date, event_time);
         res.send(result);
     } catch (error) {
         console.log(error);

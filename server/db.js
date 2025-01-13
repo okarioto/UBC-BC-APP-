@@ -296,9 +296,10 @@ async function getEventSignUps(eid) {
  */
 async function getUpcomingPastEvents(event_date, event_time) {
     event_date = event_date ? "'" + event_date + "'" : "event_date";
+    event_time = event_time ? "'" + event_time + "'" : "event_date";
 
-    const query1 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date >= ${event_date}`;
-    const query2 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date < ${event_date}`;
+    const query1 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date >= ${event_date} OR (event_date = ${event_date} AND event_time >= ${event_time})`;
+    const query2 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date < ${event_date} OR (event_date = ${event_date} AND event_time < ${event_time})`;
     try {
         const result1 = await pool.query(query1);
         const result2 = await pool.query(query2);
