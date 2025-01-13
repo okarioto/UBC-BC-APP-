@@ -11,10 +11,10 @@ const pool = new pg.Pool({
     port: process.env.DB_PORT,
 });
 /**
- * Gets users
+ * Get users
  * @requires Direction, column, and all inputs are sanitized 
  * @requires use 0 for wildcard for uid and user_level
- * @requires use '' for wildcard for string arguements a
+ * @requires use '' for wildcard for string arguements 
  * @requires use -1 for arguement as wildcard for no_show
  * @param {string} direction - ASC or DESC.
  * @param {string} column - Column to sort by.
@@ -48,7 +48,7 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
 }
 
 /**
- * Gets events
+ * Get events
  * @requires All imputs are sanitized
  * @requires Use '' for arguments as wildcard when needed
  * @param {int} eid
@@ -270,7 +270,46 @@ async function updateEvent(eid, event_date, event_time, event_location, event_na
     }
 }
 
+/**
+ * Get sign-ups of specific event
+ * @requires All inputs are sanitized
+ * @requires eid to be a real integer >= 1
+ * @param {int} eid - event id to get number of sign-ups for
+ * @returns {8 byte signed int} number of sign-ups for specified event
+ */
+async function getEventSignUps(eid) {
+    const query = `SELECT COUNT(uid) FROM sign_ups WHERE eid = ${eid}`;
+    try {
+        const result = await pool.query(query);
+        return result.rows[0].count;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+/**
+ * Get upcoming and past events based on given date and time 
+ * @requires All inputs are sanitized
+ * @param {string} event_date - date to get upcoming and past events by
+ * @returns {Array} array of two JSON arrays, first entry is upcoming events,
+ * second entry is past events
+ */
+async function getUpcomingPastEvents(event_date, event_time) {
+    event_date = event_date ? "'" + event_date + "'" : "event_date";
+
+    const query1 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date >= ${event_date}`;
+    const query2 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date < ${event_date}`;
+    try {
+        const result1 = await pool.query(query1);
+        const result2 = await pool.query(query2);
+        const result = [result1.rows, result2.rows];
+        return result;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
 
 
 
-export { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent };
+
+export { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents };

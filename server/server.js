@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent } from "./db.js"
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents } from "./db.js"
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
@@ -131,8 +131,28 @@ app.get("/sign-ups", async (req, res) => {
         console.log(error);
         res.status(500).send(error);
     }
+})
 
+/**
+ * Gets the number of sign-ups for a specific event
+ * Provide eid, where eid >= 1
+ * @returns 8-byte signed int of the number of sign-ups for the specified event
+ */
+app.get("/event-signups", async (req, res) => {
+    var {eid} = req.query;
+    eid ||= '0';
+    eid = parseInt(eid);
 
+    if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
+    if (eid <= 0) return res.status(400).send('Event ID needs to be greater than or equal to 1');
+
+    try {
+        const result = await getEventSignUps(eid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
 })
 
 
@@ -396,12 +416,30 @@ app.post("/login", async (req, res) => {
         console.log(err);
         return res.status(500).send(err);
     }
-
-
-
 })
 
+/**
+ * Gets the upcoming and past events associated with a given date.
+ * Events on the given date are treated as upcoming
+ * Provide the current date as 'yyyy-mm-dd'. 
+ * given value will be returned.
+ * @requires values to be of the correct type and not null
+ * @returns an array of two JSON arrays, first entry is upcoming events,
+ * second entry is past events
+ */
+app.get("/upcoming-and-past-events", async (req, res) => {
+    var { event_date = '' } = req.query;
 
+    if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');
+
+    try {
+        const result = await getUpcomingPastEvents(event_date);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
 
 
 
