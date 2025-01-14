@@ -19,6 +19,7 @@ export default function Event() {
     isError: false,
     errorMsg: "",
   });
+  const [isFull, setIsFull] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +39,11 @@ export default function Event() {
         setEvent(eventResult.data[0]);
         setParticipants(signUpsResult.data);
       } catch (error) {
-        setErrorState({ isError: true, errorMsg: "Something went wrong while fetching data. Please wait a while and try again" });
+        setErrorState({
+          isError: true,
+          errorMsg:
+            "Something went wrong while fetching data. Please wait a while and try again",
+        });
       }
     }
     fetchData();
@@ -47,6 +52,10 @@ export default function Event() {
   useEffect(() => {
     setIsSignedUp(participants.some((p) => p.uid === user.uid));
   }, [participants, user.uid]);
+
+  useEffect(()=>{
+    (event.count >= 50) ? setIsFull(true) : setIsFull(false);
+  },[event])
 
   async function withdraw() {
     try {
@@ -63,7 +72,10 @@ export default function Event() {
       }
     } catch (error) {
       console.log(error);
-      setErrorState({isError: true, errorMsg: "Something went wrong while withdrawing. Please try again."})
+      setErrorState({
+        isError: true,
+        errorMsg: "Something went wrong while withdrawing. Please try again.",
+      });
     }
   }
 
@@ -82,12 +94,10 @@ export default function Event() {
       });
     } catch (error) {
       console.log(error);
-            setErrorState({
-              isError: true,
-              errorMsg:
-                "Something went wrong while signing up. Please try again.",
-            });
-
+      setErrorState({
+        isError: true,
+        errorMsg: "Something went wrong while signing up. Please try again.",
+      });
     }
   }
 
@@ -127,28 +137,35 @@ export default function Event() {
             </div>
           </div>
 
-          <div className="flex justify-center w-full mb-3">
-            {isSignedUp && (
-              <button
-                onClick={withdraw}
-                className="bg-gray-300 text-red-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-red-600 hover:text-white duration-500"
-              >
-                Withdraw
-              </button>
-            )}
+           
+            <div className="flex justify-center w-full mb-3">
+              {isSignedUp && (
+                <button
+                  onClick={withdraw}
+                  className="bg-gray-300 text-red-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-red-600 hover:text-white duration-500"
+                >
+                  Withdraw
+                </button>
+              )}
 
-            {!isSignedUp && (
-              <button
-                onClick={signup}
-                className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500"
-              >
-                Sign Up
-              </button>
-            )}
-          </div>
+             {(!isFull && !isSignedUp )&& (
+                <button
+                  onClick={signup}
+                  className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500"
+                >
+                  Sign Up
+                </button>
+              )}
+            </div>
+          
           {errorState.isError && (
             <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
               {errorState.errorMsg}
+            </p>
+          )}
+          {isFull && (
+            <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
+              Event is full
             </p>
           )}
 
