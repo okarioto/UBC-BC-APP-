@@ -75,7 +75,6 @@ VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, '$argon2id$v=19$m=65536,t=3,p=4$
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, '$argon2id$v=19$m=65536,t=3,p=4$84GuPhY+7gCAM8iLdYN2uQ$wSMdFD5lWO4MKq0+gyhf06ToxqO3SDZZdxkjXofxgA0', 0, false);
 
-
 INSERT INTO events (event_date, event_location, event_time)
 VALUES ('2025-01-01', 'WAR MEMORIAL', '17:30:00');
 INSERT INTO events (event_date, event_location, event_time)
@@ -95,23 +94,6 @@ VALUES ('2025-01-17', 'HARRY OSBORNE', '17:30:00');
 INSERT INTO events (event_date, event_location, event_time)
 VALUES ('2025-01-17', 'WAR MEMORIAL', '17:30:00');
 
-
-INSERT INTO sign_ups (uid, eid)
-VALUES (1,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (2,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (3,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (4,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (5,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (6,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (7,9);
-INSERT INTO sign_ups (uid, eid)
-VALUES (8,9);
 INSERT INTO sign_ups (uid, eid)
 VALUES (1,2);
 INSERT INTO sign_ups (uid, eid)
@@ -152,3 +134,219 @@ INSERT INTO sign_ups (uid, eid)
 VALUES (4,2);
 INSERT INTO sign_ups (uid, eid)
 VALUES (5,5);
+
+
+
+--FOR TESTING 50 MAX
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('1@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('2@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('3@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('4@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('5@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('6@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('7@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('8@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('9@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('0@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('10EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('11@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('12@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('13@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('14@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('15@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('16@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('17@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('18@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('19@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('20@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('21@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('22@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('23@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('24@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('25@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('26@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('27@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('28@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('29@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('30@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('31@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('32@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('33@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('34@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('35@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('36@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('37@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('38@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('39@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('40@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('41@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('42@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('43@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('44@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('45@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('46@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('47@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('48@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('49@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('50@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+
+
+
+
+
+INSERT INTO sign_ups (uid, eid)
+VALUES (9,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (10,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (11,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (12,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (13,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (14,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (15,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (16,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (17,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (18,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (19,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (20,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (21,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (22,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (23,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (24,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (25,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (26,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (27,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (28,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (29,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (30,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (31,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (32,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (33,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (34,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (35,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (36,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (37,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (38,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (39,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (40,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (41,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (42,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (43,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (44,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (45,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (46,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (47,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (48,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (49,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (50,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (51,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (52,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (53,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (54,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (55,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (56,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (57,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (58,9);
+
+
+
+
+
