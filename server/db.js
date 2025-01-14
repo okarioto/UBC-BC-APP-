@@ -56,16 +56,20 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
  * @param {string} event_time - 'HH:MM:SS'.
  * @param {string} event_location
  * @param {string} event_name
- * @returns {Array} Array of event objects with specific event_date, event_time, event_location, event_name if specified
+ * @returns {Array} Array of event objects (with count of signups) with specific event_date, event_time, event_location, event_name if specified
  */
 async function getEvents(eid, event_date, event_time, event_location, event_name) {
-    eid ||= 'eid';
+    eid ||= 'e.eid';
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_time";
     event_location = event_location ? "'" + event_location + "'" : "event_location";
     event_name = event_name ? "'" + event_name + "'" : "event_name";
 
-    const query = `SELECT eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location FROM events WHERE eid = ${eid} AND event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location}) AND event_name = UPPER(${event_name})`;
+    const query = `
+    SELECT e.eid, COUNT(s.uid), event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location 
+    FROM events e LEFT JOIN sign_ups s ON e.eid = s.eid 
+    WHERE e.eid = ${eid} AND event_date = ${event_date} AND event_time = ${event_time} AND event_location = UPPER(${event_location}) AND event_name = UPPER(${event_name}) 
+    GROUP BY e.eid`;
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -81,12 +85,15 @@ async function getEvents(eid, event_date, event_time, event_location, event_name
  * @requires Use 0 for arguments as wildcard when needed
  * @param {int} uid - user ID.
  * @param {int} eid - event ID.
- * @returns {Array} Array of signup objects for certain uid or eid (if specified)
+ * @returns {Array} Array of signup objects (with user names) for certain uid or eid (if specified)
  */
 async function getSignUps(uid, eid) {
-    uid ||= 'uid';
-    eid ||= 'eid';
-    const query = `SELECT * FROM sign_ups WHERE uid = ${uid} AND eid = ${eid}`
+    uid ||= 's.uid';
+    eid ||= 's.eid';
+    const query = `
+    SELECT s.uid, s.eid, u.fname, u.lname 
+    FROM sign_ups s JOIN users u ON s.uid = u.uid 
+    WHERE s.uid = ${uid} AND s.eid = ${eid}`
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -127,7 +134,7 @@ async function insertUser(email, fname, lname, user_level, user_password) {
  * @returns {JSON} The new event object
  */
 async function insertEvent(event_date, event_time, event_location, event_name) {
-    const query = `INSERT INTO events (event_location, event_time, event_date, event_name) VALUES (UPPER('${event_location}'), '${event_time}', '${event_date}', UPPER('${event_name}')) RETURNING eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`
+    const query = `INSERT INTO events (event_location, event_time, event_date, event_name) VALUES (UPPER('${event_location}'), '${event_time}', '${event_date}', UPPER('${event_name}')) RETURNING eid, event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location`
     try {
         const result = await pool.query(query);
         return result.rows[0];
@@ -261,7 +268,7 @@ async function updateEvent(eid, event_date, event_time, event_location, event_na
     event_location = event_location ? "'" + event_location + "'" : "event_location";
     event_name = event_name ? "'" + event_name + "'" : "event_name";
 
-    const query = `UPDATE events SET event_date = ${event_date}, event_time = ${event_time}, event_location = UPPER(${event_location}), event_name = UPPER(${event_name}) WHERE eid = ${eid} RETURNING eid, event_name, TO_CHAR(event_date, 'yyyy-mm-dd') as event_date, event_time, event_location`;
+    const query = `UPDATE events SET event_date = ${event_date}, event_time = ${event_time}, event_location = UPPER(${event_location}), event_name = UPPER(${event_name}) WHERE eid = ${eid} RETURNING eid, event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location`;
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -298,8 +305,19 @@ async function getUpcomingPastEvents(event_date, event_time) {
     event_date = event_date ? "'" + event_date + "'" : "event_date";
     event_time = event_time ? "'" + event_time + "'" : "event_date";
 
-    const query1 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date >= ${event_date} OR (event_date = ${event_date} AND event_time >= ${event_time})`;
-    const query2 = `SELECT eid, event_name, TO_CHAR(event_date, 'YYYY-MM-DD') AS event_date, event_time, event_location FROM events WHERE event_date < ${event_date} OR (event_date = ${event_date} AND event_time < ${event_time})`;
+    const query1 = `
+    SELECT e.eid, COUNT(s.uid), event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location 
+    FROM events e LEFT JOIN sign_ups s ON e.eid = s.eid
+    WHERE event_date > ${event_date} OR (event_date = ${event_date} AND event_time >= ${event_time})
+    GROUP BY e.eid
+    ORDER BY e.eid ASC`;
+    const query2 = `SELECT e.eid, COUNT(s.uid), event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location 
+    FROM events e LEFT JOIN sign_ups s ON e.eid = s.eid
+    WHERE event_date < ${event_date} OR (event_date = ${event_date} AND event_time < ${event_time})
+    GROUP BY e.eid
+    ORDER BY e.eid ASC`;
+
+   
     try {
         const result1 = await pool.query(query1);
         const result2 = await pool.query(query2);

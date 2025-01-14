@@ -85,7 +85,7 @@ app.get("/users", async (req, res) => {
  * Gets events.
  * Provide eid, event_date, event_time, event_location, event_name in query of request as 
  * 'YYYY-MM-DD' and 'HH:MM:SS' and 'location' and 'name' as needed
- * @returns Array of events
+ * @returns Array of events (includes # of signups)
  */
 app.get("/events", async (req, res) => {
     var { eid = '0', event_date = '', event_time = '', event_location = '', event_name = '' } = req.query;
@@ -112,7 +112,7 @@ app.get("/events", async (req, res) => {
 /**
  * Gets sign-ups.
  * Provide eid and uid in query of request as needed
- * @returns Array of sign-ups 
+ * @returns Array of sign-ups (includes user names)
  */
 app.get("/sign-ups", async (req, res) => {
     var { uid = '0', eid = '0' } = req.query;
@@ -135,10 +135,10 @@ app.get("/sign-ups", async (req, res) => {
 
 /**
  * Gets the number of sign-ups for a specific event
- * Provide eid, where eid >= 1
+ * Provide eid in query, where eid >= 1
  * @returns 8-byte signed int of the number of sign-ups for the specified event
  */
-app.get("/event-signups", async (req, res) => {
+app.get("/sign-ups/count", async (req, res) => {
     var {eid} = req.query;
     eid ||= '0';
     eid = parseInt(eid);
@@ -224,7 +224,7 @@ app.post("/events", async (req, res) => {
  * Inserts sign up.
  * Provide uid of user and eid of event in request body as
  * {uid: '', eid: ''}
- * @returns JSON object of new sign up with attendance being false
+ * @returns JSON object of new sign up
  */
 app.post("/sign-ups", async (req, res) => {
     var { uid, eid } = req.body;
@@ -290,7 +290,7 @@ app.delete("/users/:uid", async (req, res) => {
  * @returns {boolean} True if sucessful delete
  */
 app.delete("/sign-ups", async (req, res) => {
-    var { uid, eid } = req.query;
+    var { uid="0", eid="0" } = req.query;
     uid = parseInt(uid);
     eid = parseInt(eid);
 
@@ -298,7 +298,7 @@ app.delete("/sign-ups", async (req, res) => {
     if (eid === 0 || Number.isNaN(eid)) return res.status(400).send('Invalid event ID');
 
     try {
-        const result = await deleteSignUp(uid);
+        const result = await deleteSignUp(uid, eid);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -426,7 +426,7 @@ app.post("/login", async (req, res) => {
  * @returns an array of two JSON arrays, first entry is upcoming events,
  * second entry is past events
  */
-app.get("/upcoming-and-past-events", async (req, res) => {
+app.get("/events/upcoming-and-past", async (req, res) => {
     var { event_date = '', event_time = '' } = req.query;
 
     if (event_date !== '' && (event_date.includes(';') || !event_date.includes('-') || event_date.length !== 10)) return res.status(400).send('Invalid Date');

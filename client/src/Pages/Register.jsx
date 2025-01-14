@@ -26,6 +26,13 @@ export default function Register() {
     const inputLevel = event.target.user_level.value;
     const inputEmail = event.target.email.value;
     const inputPassword = event.target.user_password.value;
+    const inputPasswordCheck = event.target.user_password_check.value;
+
+    if (inputPassword !== inputPasswordCheck){
+      setIsError(true);
+      setErrorMsg("Passwords don't match");
+      return;
+    }
 
     try {
       const result = await axios.post(`${apiUrl}/register`, {
@@ -35,6 +42,7 @@ export default function Register() {
         email: inputEmail,
         user_password: inputPassword,
       });
+      setIsError(false);
       setIsSuccess(true);
     } catch (error) {
       console.log(error.response.data);
@@ -60,32 +68,40 @@ export default function Register() {
           onSubmit={handleSubmit}
           className="flex flex-col justify-center items-center w-full"
         >
-          <div className="flex flex-col items-start w-full mb-5">
-            <label htmlFor="fname" className="tracking-wide text-gray-500 mb-1">
-              First Name*
-            </label>
-            <input
-              type="text"
-              name="fname"
-              id="fname"
-              placeholder="Joanne"
-              required
-              className=" bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
-            />
-          </div>
+          <div className="flex w-full justify-between">
+            <div className="flex flex-col items-start w-[45%] mb-3">
+              <label
+                htmlFor="fname"
+                className="tracking-wide text-gray-500 mb-1"
+              >
+                First Name*
+              </label>
+              <input
+                type="text"
+                name="fname"
+                id="fname"
+                placeholder="Joanne"
+                required
+                className=" bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
+              />
+            </div>
 
-          <div className="flex flex-col items-start w-full mb-3">
-            <label htmlFor="lname" className="tracking-wide text-gray-500 mb-2">
-              Last Name*
-            </label>
-            <input
-              type="text"
-              name="lname"
-              id="lname"
-              placeholder="Doe"
-              required
-              className="bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
-            />
+            <div className="flex flex-col items-start w-[45%] mb-3">
+              <label
+                htmlFor="lname"
+                className="tracking-wide text-gray-500 mb-1"
+              >
+                Last Name*
+              </label>
+              <input
+                type="text"
+                name="lname"
+                id="lname"
+                placeholder="Doe"
+                required
+                className="bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
+              />
+            </div>
           </div>
 
           <div className="flex flex-col items-start w-full mb-3">
@@ -113,6 +129,22 @@ export default function Register() {
               type="password"
               name="user_password"
               id="user_password"
+              placeholder="Not qwerty"
+              required
+              className="bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
+            />
+          </div>
+          <div className="flex flex-col items-start w-full mb-3">
+            <label
+              htmlFor="user_password_check"
+              className="tracking-wide text-gray-500 mb-2"
+            >
+              Confirm Password*
+            </label>
+            <input
+              type="password"
+              name="user_password_check"
+              id="user_password_check"
               placeholder="Not qwerty"
               required
               className="bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"

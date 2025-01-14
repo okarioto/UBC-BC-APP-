@@ -29,9 +29,6 @@ CREATE TABLE sign_ups(
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
 );
 
-SELECT *
-FROM sign_ups s, events e
-WHERE e.event_date="curr_date", e.eid !="curr_eid" , e.eid = s.eid, s.uid = "curr_uid"
 
 CREATE OR REPLACE FUNCTION enforce_max_sign_ups()
 RETURNS TRIGGER AS $$
@@ -88,13 +85,15 @@ VALUES ('2025-01-03', 'HARRY OSBORNE', '17:00:00');
 INSERT INTO events (event_date, event_location, event_time)
 VALUES ('2025-01-03', 'HARRY OSBORNE', '19:00:00');
 INSERT INTO events (event_date, event_location, event_time)
-VALUES ('2025-01-03', 'SRC', '18:00:00');
+VALUES ('2025-01-13', 'SRC', '18:00:00');
 INSERT INTO events (event_date, event_location, event_time)
-VALUES ('2025-01-03', 'SRC', '16:00:00');
+VALUES ('2025-01-13', 'SRC', '16:00:00');
 INSERT INTO events (event_date, event_location, event_time)
-VALUES ('2025-01-05', 'SRC', '20:30:00');
+VALUES ('2025-01-15', 'SRC', '20:30:00');
 INSERT INTO events (event_date, event_location, event_time)
-VALUES ('2025-01-05', 'HARRY OSBORNE', '17:30:00');
+VALUES ('2025-01-17', 'HARRY OSBORNE', '17:30:00');
+INSERT INTO events (event_date, event_location, event_time)
+VALUES ('2025-01-17', 'WAR MEMORIAL', '17:30:00');
 
 
 INSERT INTO sign_ups (uid, eid)

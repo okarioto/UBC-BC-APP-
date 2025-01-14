@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import EventCard from "../components/Event_Card";
+import EventCardSm from "../components/Event_Card_Sm";
 import Header from "../components/Header";
 import Socials from "../components/Socials";
 import BlackBtn from "../components/Black_Btn";
@@ -10,10 +10,12 @@ import BlackBtn from "../components/Black_Btn";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
-  const [events, setEvents] = useState([]);
+  const currentDate = new Date();
+  const formattedDate = currentDate.toISOString().split("T")[0];
+  const formattedTime = currentDate.toISOString().split("T")[1].split(".")[0];
+  const [events, setEvents] = useState({upComing: [],past: []});
   const { user, setUser, loading } = useContext(AuthContext);
   const navigate = useNavigate();
-  console.log(user);
 
   useEffect(() => {
     if (!loading && user.uid === 0) {
@@ -22,16 +24,22 @@ function Dashboard() {
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    async function getEvents() {
+    async function fetchEvents() {
       try {
-        const result = await axios.get(`${apiUrl}/events`);
-        setEvents(result.data);
+        const result = await axios.get(
+          `${apiUrl}/events/upcoming-and-past`,{
+            params:{
+            event_date: formattedDate,
+            event_time: formattedTime}
+          }
+        );
+        setEvents({upComing: result.data[0], past: result.data[1]});
       } catch (error) {
         console.log(error);
       }
     }
 
-    getEvents();
+    fetchEvents();
   }, []);
 
   function logOut() {
@@ -48,16 +56,17 @@ function Dashboard() {
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
           </h3>
-          <div className="flex flex-col w-full max-h-[14rem] overflow-scroll">
-            {events.map((evnt, idx) => {
+          <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
+            {events.upComing.map((evnt) => {
+
               return (
-                <EventCard
+                <EventCardSm
                   key={evnt.eid}
                   eid={evnt.eid}
                   event_name={evnt.event_name}
                   event_time={evnt.event_time}
                   event_date={evnt.event_date}
-                  event_location={evnt.event_location}
+                  event_sign_up_count={evnt.count}
                 />
               );
             })}
@@ -67,14 +76,19 @@ function Dashboard() {
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Previous events
           </h3>
-          <div className="flex flex-col w-full max-h-[10rem] overflow-scroll">
-            <EventCard
-              eid={1}
-              event_name="temp"
-              event_time="temp"
-              event_date="temp"
-              event_location="temp"
-            />
+          <div className="flex flex-col w-full max-h-[8rem] overflow-scroll">
+            {events.past.map((evnt) => {
+              return (
+                <EventCardSm
+                  key={evnt.eid}
+                  eid={evnt.eid}
+                  event_name={evnt.event_name}
+                  event_time={evnt.event_time}
+                  event_date={evnt.event_date}
+                  event_sign_up_count={evnt.count}
+                />
+              );
+            })}
           </div>
         </div>
 
