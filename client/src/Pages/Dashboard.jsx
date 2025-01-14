@@ -19,7 +19,7 @@ function Dashboard() {
 
   useEffect(() => {
     if (!loading && user.uid === 0) {
-      navigate("/");
+      navigate("/login");
     }
   }, [user, loading, navigate]);
 

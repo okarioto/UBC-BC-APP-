@@ -11,12 +11,21 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function Event() {
   const { eid } = useParams();
-  const { user } = useContext(AuthContext);
+  const { user, loading } = useContext(AuthContext);
   const [event, setEvent] = useState([]);
   const [participants, setParticipants] = useState([]);
   const [isSignedUp, setIsSignedUp] = useState(false);
-  const [errorState, setErrorState] = useState({isError: false, errorMsg: ""});
+  const [errorState, setErrorState] = useState({
+    isError: false,
+    errorMsg: "",
+  });
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loading && user.uid === 0) {
+      navigate("/login");
+    }
+  }, [user, loading, navigate]);
 
   useEffect(() => {
     async function fetchData() {
@@ -29,7 +38,7 @@ export default function Event() {
         setEvent(eventResult.data[0]);
         setParticipants(signUpsResult.data);
       } catch (error) {
-        setErrorState({isError: true, errorMsg: "something went wrong"});
+        setErrorState({ isError: true, errorMsg: "something went wrong" });
       }
     }
     fetchData();
@@ -130,9 +139,11 @@ export default function Event() {
               </button>
             )}
           </div>
-          {errorState.isError && <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
-            {errorState.errorMsg}
-          </p>}
+          {errorState.isError && (
+            <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
+              {errorState.errorMsg}
+            </p>
+          )}
 
           <div className="flex flex-col w-full items-center">
             <Socials />
