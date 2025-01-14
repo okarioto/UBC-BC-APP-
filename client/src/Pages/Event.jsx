@@ -38,7 +38,7 @@ export default function Event() {
         setEvent(eventResult.data[0]);
         setParticipants(signUpsResult.data);
       } catch (error) {
-        setErrorState({ isError: true, errorMsg: "something went wrong" });
+        setErrorState({ isError: true, errorMsg: "Something went wrong. Please wait a while and try again" });
       }
     }
     fetchData();
@@ -63,6 +63,7 @@ export default function Event() {
       }
     } catch (error) {
       console.log(error);
+      setErrorState({isError: true, errorMsg: "Something went wrong while withdrawing. Please try again."})
     }
   }
 
@@ -81,6 +82,12 @@ export default function Event() {
       });
     } catch (error) {
       console.log(error);
+            setErrorState({
+              isError: true,
+              errorMsg:
+                "Something went wrong while signing up. Please try again.",
+            });
+
     }
   }
 
