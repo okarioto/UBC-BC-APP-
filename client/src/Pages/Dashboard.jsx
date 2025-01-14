@@ -13,7 +13,11 @@ function Dashboard() {
   const currentDate = new Date();
   const formattedDate = currentDate.toISOString().split("T")[0];
   const formattedTime = currentDate.toISOString().split("T")[1].split(".")[0];
-  const [events, setEvents] = useState({upComing: [],past: []});
+  const [events, setEvents] = useState({ upComing: [], past: [] });
+  const [errorState, setErrorState] = useState({
+    isError: false,
+    errorMsg: "",
+  });
   const { user, setUser, loading } = useContext(AuthContext);
   const navigate = useNavigate();
 
@@ -26,16 +30,19 @@ function Dashboard() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const result = await axios.get(
-          `${apiUrl}/events/upcoming-and-past`,{
-            params:{
+        const result = await axios.get(`${apiUrl}/events/upcoming-and-past`, {
+          params: {
             event_date: formattedDate,
-            event_time: formattedTime}
-          }
-        );
-        setEvents({upComing: result.data[0], past: result.data[1]});
+            event_time: formattedTime,
+          },
+        });
+        setEvents({ upComing: result.data[0], past: result.data[1] });
       } catch (error) {
         console.log(error);
+        setErrorState({
+          isError: true,
+          errorMsg: "Something went wrong. Please try again later.",
+        });
       }
     }
 
@@ -58,7 +65,6 @@ function Dashboard() {
           </h3>
           <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
             {events.upComing.map((evnt) => {
-
               return (
                 <EventCardSm
                   key={evnt.eid}
@@ -94,6 +100,11 @@ function Dashboard() {
 
         <div className="flex flex-col w-full items-center">
           <Socials />
+          {errorState.isError && (
+            <p className="text-[10px] font-light text-[#cc0000] mb-5 mt-4 text-center">
+              {errorState.errorMsg}
+            </p>
+          )}
           <BlackBtn onClick={logOut} text={"Log Out"} />
         </div>
       </div>

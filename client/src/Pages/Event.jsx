@@ -38,7 +38,7 @@ export default function Event() {
         setEvent(eventResult.data[0]);
         setParticipants(signUpsResult.data);
       } catch (error) {
-        setErrorState({ isError: true, errorMsg: "Something went wrong. Please wait a while and try again" });
+        setErrorState({ isError: true, errorMsg: "Something went wrong while fetching data. Please wait a while and try again" });
       }
     }
     fetchData();

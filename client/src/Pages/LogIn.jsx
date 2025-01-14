@@ -29,14 +29,11 @@ function LogIn() {
       navigate("/dashboard");
     } catch (error) {
       setIsError(true);
-      if (error.status >= 500)
-        setErrorMsg("Something went wrong, please try again");
+
+      setErrorMsg("Something went wrong, please try again");
       setErrorMsg(error.response.data);
     }
 
-    function goToRegister() {
-      navigate("/register");
-    }
   }
 
   return (

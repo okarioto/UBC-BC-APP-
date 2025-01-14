@@ -97,7 +97,21 @@ VALUES ('2025-01-17', 'WAR MEMORIAL', '17:30:00');
 
 
 INSERT INTO sign_ups (uid, eid)
-VALUES (1,1);
+VALUES (1,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (2,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (3,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (4,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (5,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (6,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (7,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (8,9);
 INSERT INTO sign_ups (uid, eid)
 VALUES (1,2);
 INSERT INTO sign_ups (uid, eid)
