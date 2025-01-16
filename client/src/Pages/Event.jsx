@@ -91,8 +91,8 @@ export default function Event() {
     }
   }
 
-  function goToDashboard() {
-    navigate("/dashboard");
+  function back() {
+    navigate(-1);
   }
 
   return (
@@ -154,7 +154,7 @@ export default function Event() {
 
           <div className="flex flex-col w-full items-center">
             <Socials />
-            <BlackBtn onClick={goToDashboard} text={"Back"} />
+            <BlackBtn onClick={back} text={"Back"} />
           </div>
         </div>
       </div>

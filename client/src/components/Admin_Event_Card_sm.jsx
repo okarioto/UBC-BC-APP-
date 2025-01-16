@@ -1,10 +1,15 @@
 import { useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { AuthContext } from "../context/AuthContext";
 
-export default function EventCardSm(props){
+export default function AdminEventCardSm(props){
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   function handleEventClick() {
-    navigate(`/event/${props.eid}`);
+   if (user.isAdmin) {
+    navigate(`/admin-event/${props.eid}`);
+   }
   }
 
 return (
