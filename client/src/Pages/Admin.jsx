@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 function Admin() {
   const { user } = useContext(AuthContext);
@@ -16,4 +17,5 @@ function Admin() {
   }
 }
 
-export default Admin;
+
+export default { Admin };

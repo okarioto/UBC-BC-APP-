@@ -6,6 +6,9 @@ import Dashboard from "./Pages/Dashboard";
 import Admin from "./Pages/Admin";
 import Register from "./Pages/Register";
 import Event from "./Pages/Event";
+import AdminDashboard from "./Pages/AdminDashboard";
+import AdminEvent from "./Pages/AdminEvent";
+import BugForm from "./Pages/BugForm";
 
 function App() {
   return (
@@ -16,8 +19,11 @@ function App() {
           <Route path="/login" element={<LogIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/admin" element={<Admin />} />
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<Register />} />
           <Route path="/event/:eid" element={<Event />} />
+          <Route path="/admin-event/:eid" element={<AdminEvent />} />
+          <Route path="/bug-form" element={<BugForm />} />
         </Routes>
       </Router>
     </AuthProvider>
