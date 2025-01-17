@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./Pages/LogIn";
 import Dashboard from "./Pages/Dashboard";
-import Admin from "./Pages/Admin";
 import Register from "./Pages/Register";
 import Event from "./Pages/Event";
 import AdminDashboard from "./Pages/AdminDashboard";
@@ -18,7 +17,6 @@ function App() {
           <Route path="/" element={<LogIn />} />
           <Route path="/login" element={<LogIn />} />
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/admin" element={<Admin />} />
           <Route path="/admin-dashboard" element={<AdminDashboard />} />
           <Route path="/register" element={<Register />} />
           <Route path="/event/:eid" element={<Event />} />
