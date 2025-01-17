@@ -23,12 +23,11 @@ export default function Event() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user.uid === 0) {
-      navigate("/login");
-    }
+    !loading && user.uid === 0 && navigate("/login");
   }, [user, loading, navigate]);
 
   useEffect(() => {
+    document.title = `UBC-BC - Event`;
     async function fetchData() {
       try {
         const [eventResult, signUpsResult] = await Promise.all([
@@ -53,9 +52,9 @@ export default function Event() {
     setIsSignedUp(participants.some((p) => p.uid === user.uid));
   }, [participants, user.uid]);
 
-  useEffect(()=>{
-    (event.count >= 50) ? setIsFull(true) : setIsFull(false);
-  },[event])
+  useEffect(() => {
+    event.count >= 50 ? setIsFull(true) : setIsFull(false);
+  }, [event]);
 
   async function withdraw() {
     try {
@@ -101,8 +100,8 @@ export default function Event() {
     }
   }
 
-  function back() {
-    navigate(-1);
+  function goToDashboard() {
+    navigate("/dashboard");
   }
 
   return (
@@ -137,27 +136,26 @@ export default function Event() {
             </div>
           </div>
 
-           
-            <div className="flex justify-center w-full mb-3">
-              {isSignedUp && (
-                <button
-                  onClick={withdraw}
-                  className="bg-gray-300 text-red-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-red-600 hover:text-white duration-500"
-                >
-                  Withdraw
-                </button>
-              )}
+          <div className="flex justify-center w-full mb-3">
+            {isSignedUp && (
+              <button
+                onClick={withdraw}
+                className="bg-gray-300 text-red-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-red-600 hover:text-white duration-500"
+              >
+                Withdraw
+              </button>
+            )}
 
-             {(!isFull && !isSignedUp )&& (
-                <button
-                  onClick={signup}
-                  className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500"
-                >
-                  Sign Up
-                </button>
-              )}
-            </div>
-          
+            {!isFull && !isSignedUp && (
+              <button
+                onClick={signup}
+                className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500"
+              >
+                Sign Up
+              </button>
+            )}
+          </div>
+
           {errorState.isError && (
             <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
               {errorState.errorMsg}
@@ -171,7 +169,7 @@ export default function Event() {
 
           <div className="flex flex-col w-full items-center">
             <Socials />
-            <BlackBtn onClick={back} text={"Back"} />
+            <BlackBtn onClick={goToDashboard} text={"Back"} />
           </div>
         </div>
       </div>

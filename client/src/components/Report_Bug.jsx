@@ -7,7 +7,7 @@ export default function Report_Bug() {
   navigate("/bug-form");
  }
 
- return (<a href="/bug-form" onClick={(e) => e.preventDefault() || handleBugClick()} className="font-bold text-[12px] text-[#636363]">
+ return (<p  onClick={handleBugClick} className="font-bold text-[12px] text-[#636363] cursor-pointer">
   Report a bug
-  </a>)
+  </p>)
 }

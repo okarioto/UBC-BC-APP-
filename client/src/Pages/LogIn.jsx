@@ -36,6 +36,10 @@ function LogIn() {
 
   }
 
+  function goToRegister(){
+    navigate("/register");
+  }
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex flex-col min-h-1/2 w-[80%] max-w-[30rem] items-center">
@@ -68,12 +72,12 @@ function LogIn() {
           <BlackBtn type="submit" text={isError ? "Try Again" : "Log In"} />
         </form>
         <p className="mb-3 mt-3 text-gray-300">or</p>
-        <a
-          href="/register"
-          className="flex justify-center items-center bg-white text-black font-bold border-2 border-black rounded-xl h-[3rem] w-[75%] hover:bg-gray-300  duration-500"
+        <div
+          onClick={goToRegister}
+          className="flex justify-center items-center bg-white text-black font-bold border-2 border-black rounded-xl h-[3rem] w-[75%] hover:bg-gray-300  duration-500 cursor-pointer"
         >
-          <button> Sign Up </button>
-        </a>
+          <button> Register </button>
+        </div>
       </div>
     </div>
   );

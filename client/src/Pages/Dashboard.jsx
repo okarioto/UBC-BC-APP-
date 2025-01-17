@@ -22,12 +22,11 @@ function Dashboard() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!loading && user.uid === 0) {
-      navigate("/login");
-    }
+    !loading && user.uid === 0 && navigate("/login");
   }, [user, loading, navigate]);
 
   useEffect(() => {
+    document.title = "UBC-BC - Dashboard";
     async function fetchEvents() {
       try {
         const result = await axios.get(`${apiUrl}/events/upcoming-and-past`, {
@@ -55,23 +54,10 @@ function Dashboard() {
     navigate("/");
   }
 
-  function handleAdminClick() {
-    if (user.userID !== 0) {
-      if (user.isAdmin) {
-        navigate("/admin-dashboard");
-      } else {
-      }
-    } else {
-      navigate("/")
-    }
-  }
-
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
-        <a href="/admin" onClick={(e) => e.preventDefault() || handleAdminClick()}>
-          <Header message="Welcome to UBC-BC" />
-          </a>
+        <Header message="Welcome to UBC-BC" />
         <div className="flex flex-col w-full mb-5">
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
