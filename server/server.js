@@ -4,12 +4,13 @@ import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
 import env from "dotenv";
+import nodemailer from "nodemailer";
 
 
 
 const corsOptions = {
     origin: 'http://localhost:5173',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
 
@@ -21,6 +22,10 @@ const secretKey = process.env.JWT_KEY
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
+app.use((req, res, next) => {
+res.setHeader("Access-Control-Allow-Origin", "*");
+next();
+});
 
 
 app.get("/", (req, res) => {
@@ -314,7 +319,7 @@ app.delete("/sign-ups", async (req, res) => {
  * @returns JSON object of updated user
  */
 app.patch("/users", async (req, res) => {
-    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.query;
+    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.body;
     uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
@@ -335,7 +340,13 @@ app.patch("/users", async (req, res) => {
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
 
     try {
-        const result = await updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count);
+        var hashed_password = await argon2.hash(user_password);
+    } catch (error) {
+        res.status(500).send(error);
+    }
+
+    try {
+        const result = await updateUsers(uid, email, fname, lname, user_level, hashed_password, noshow_count);
         res.send(result)
     } catch (error) {
         console.log(error);
@@ -351,7 +362,7 @@ app.patch("/users", async (req, res) => {
  * @returns JSON object of updated event
  */
 app.patch("/events", async (req, res) => {
-    var { eid = '0', event_date = '', event_time = '', event_location = '', event_name = '' } = req.query;
+    var { eid = '0', event_date = '', event_time = '', event_location = '', event_name = '' } = req.body;
     eid ||= '0';
     eid = parseInt(eid);
     event_date ||= '';
@@ -441,7 +452,66 @@ app.get("/events/upcoming-and-past", async (req, res) => {
     }
 })
 
+function sendRecoveryEmail({ recipient_email, OTP }) {
+    return new Promise((resolve, reject) => {
+    var transporter = nodemailer.createTransport({
+        host: "smtp-relay.brevo.com",
+        port: 587,
+        auth: {
+        user: "83d6f8001@smtp-brevo.com",
+        pass: "djGE978p12UQHgfD",
+        },
+    });
+    const mail_configs = {
+        from: process.env.MY_EMAIL,
+        to: recipient_email,
+        subject: "KODING 101 PASSWORD RECOVERY",
+        html: `<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>CodePen - OTP Email Template</title>
+    
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    <div style="margin:50px auto;width:70%;padding:20px 0">
+    <div style="border-bottom:1px solid #eee">
+        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Koding 101</a>
+    </div>
+    <p style="font-size:1.1em">Hi,</p>
+    <p>Thank you for choosing Koding 101. Use the following OTP to complete your Password Recovery Procedure. OTP is valid for 5 minutes</p>
+    <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${OTP}</h2>
+    <p style="font-size:0.9em;">Regards,<br />Koding 101</p>
+    <hr style="border:none;border-top:1px solid #eee" />
+    <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+        <p>Koding 101 Inc</p>
+        <p>1600 Amphitheatre Parkway</p>
+        <p>California</p>
+    </div>
+    </div>
+</div>
+<!-- partial -->
+    
+</body>
+</html>`,
+    };
+    transporter.sendMail(mail_configs, function (error, info) {
+        if (error) {
+        console.log(error);
+        return reject({ message: `An error has occured` });
+        }
+        return resolve({ message: "Email sent succesfuly" });
+        });
+    });
+}
 
+app.post("/send_recovery_email", (req, res) => {
+    sendRecoveryEmail(req.body)
+    .then((response) => res.send(response.message))
+    .catch((error) => res.status(500).send(error.message));
+});
 
 app.listen(port, () => {
     console.log(`Listening on port ${port}`);
