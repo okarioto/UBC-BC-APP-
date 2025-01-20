@@ -1,7 +1,8 @@
 import axios from "axios";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import BlackBtn from "../components/Black_Btn";
+import { recoveryContext } from "../App";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,6 +12,7 @@ export default function Register() {
   const [userExists, setUserExists] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
+  const { email, setEmail, setOtp } = useContext(recoveryContext);
 
   function goToLogin() {
     navigate("/");
@@ -53,6 +55,21 @@ export default function Register() {
         setErrorMsg(error.response.data);
       }
     }
+  }
+
+  function navigateToOtp() {
+    if (email) {
+      const OTP = Math.floor(Math.random() * 9000 + 1000);
+      setOtp(OTP);
+
+      axios.post(`${apiUrl}/send_recovery_email`, {
+        OTP,
+        recipient_email: email,})
+        .then(navigate("/otp", { state: { email, otp: OTP } }))
+        .catch(console.log);
+        return;
+    } 
+    return alert('Please enter your email');
   }
 
   return (
@@ -111,6 +128,7 @@ export default function Register() {
             <input
               type="email"
               name="email"
+              onChange={(e) => setEmail(e.target.value)}
               id="email"
               placeholder="example@email.com"
               required
@@ -226,7 +244,7 @@ export default function Register() {
           {userExists && (
             <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
               This email is already associated with an user.
-              <a href="mailto:example@email.com" className="underline">
+              <a onClick={navigateToOtp} className="underline">
                 Forgot password?
               </a>
             </p>

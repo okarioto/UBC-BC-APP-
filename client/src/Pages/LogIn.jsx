@@ -4,6 +4,7 @@ import { useContext, useState } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { jwtDecode } from "jwt-decode";
 import BlackBtn from "../components/Black_Btn";
+import { recoveryContext } from "../App";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -11,6 +12,7 @@ function LogIn() {
   const [isError, setIsError] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
   const { setUser } = useContext(AuthContext);
+  const { email, setEmail, setOtp } = useContext(recoveryContext);
   const navigate = useNavigate();
 
   async function handleSubmit(event) {
@@ -40,6 +42,26 @@ function LogIn() {
     navigate("/register");
   }
 
+  function navigateToOtp() {
+    if (email) {
+      const OTP = Math.floor(Math.random() * 9000 + 1000);
+      setOtp(OTP);
+
+      axios.post(`${apiUrl}/send_recovery_email`, {
+        OTP,
+        recipient_email: email,})
+        .then(navigate("/otp", { state: { email, otp: OTP } }))
+        .catch(console.log);
+        return;
+    } 
+    return alert('Please enter your email');
+  }
+
+  function navigateToOtp2() {
+    // navigate("/change-password", {state: {email}});
+    navigate("/otp");
+  }
+
   return (
     <div className="min-h-screen flex justify-center items-center">
       <div className="flex flex-col min-h-1/2 w-[80%] max-w-[30rem] items-center">
@@ -54,6 +76,7 @@ function LogIn() {
           className="flex flex-col justify-center items-center w-full"
         >
           <input
+            onChange={(e) => setEmail(e.target.value)}
             type="email"
             placeholder="email"
             name="email"
@@ -70,6 +93,7 @@ function LogIn() {
             {errorMsg}
           </p>
           <BlackBtn type="submit" text={isError ? "Try Again" : "Log In"} />
+          <p onClick={navigateToOtp} className="font-bold text-[#A9A9A9] text-sm mt-3">forgot password</p>
         </form>
         <p className="mb-3 mt-3 text-gray-300">or</p>
         <div
