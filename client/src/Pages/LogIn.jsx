@@ -41,7 +41,7 @@ function LogIn() {
   function goToRegister(){
     navigate("/register");
   }
-
+  
   function navigateToOtp() {
     if (email) {
       const OTP = Math.floor(Math.random() * 9000 + 1000);

@@ -19,6 +19,7 @@ function App() {
   const [ otp, setOtp ] = useState();
 
   return (
+    // don't really need setOtp
   <recoveryContext.Provider
   value={{email, setEmail, otp, setOtp}}>
     <AuthProvider>

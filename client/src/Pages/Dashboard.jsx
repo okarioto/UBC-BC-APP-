@@ -47,7 +47,7 @@ function Dashboard() {
 
     fetchEvents();
   }, []);
-
+  
   function logOut() {
     localStorage.removeItem("token");
     setUser({ uid: 0, fname: "", lname: "", email: "", isAdmin: false });

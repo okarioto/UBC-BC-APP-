@@ -17,7 +17,6 @@ function Otp() {
  const [otpInput, setOtpInput] = useState(new Array(4).fill(""));
  const inputRefs = useRef([]);
  const navigate = useNavigate();
- let ableToChangePwd = false;
   
   function handleChange(element, index) {
    if (!/^\d*$/.test(element.value)) return;

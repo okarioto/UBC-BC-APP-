@@ -1,8 +1,6 @@
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { useContext, useEffect, useState } from "react";
-import { AuthContext } from "../context/AuthContext";
-import { jwtDecode } from "jwt-decode";
+import { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import BlackBtn from "../components/Black_Btn";
 
@@ -13,7 +11,6 @@ function ChangePasswordForm() {
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
-  const [pwdSame, setPwdSame] = useState(false);
   const navigate = useNavigate();
   const { ableToChangePwd, email } = location.state || {};
 
@@ -43,17 +40,6 @@ function ChangePasswordForm() {
       setIsError(true);
       setErrorMsg("Passwords don't match");
       return;
-    }
-
-    try {
-      var hashed_password = await argon2.hash(inputPassword);
-    } catch (error) {
-     setIsError(true);
-    }
-
-    if (hashed_password === user.data[0].user_password) {
-     setPwdSame(true);
-     return;
     }
 
     try {
