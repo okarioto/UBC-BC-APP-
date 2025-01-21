@@ -37,6 +37,11 @@ function isValidName(name) {
     return nameRegex.test(name.trim()) && name.length <= 100 && name.length >= 2;
 }
 
+function containsBoolean(str) {
+    const lowerStr = str.toLowerCase();
+    return lowerStr === "true" || lowerStr === "false";
+}
+
 //Create API endpoints for funtions
 
 /**
@@ -47,7 +52,7 @@ function isValidName(name) {
  * @returns Array of users
  */
 app.get("/users", async (req, res) => {
-    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isAdmin = '' } = req.query;
+    var { direction = 'ASC', column = 'uid', uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '' } = req.query;
     direction ||= 'ASC';
     column ||= 'uid';
     uid ||= '0';
@@ -60,10 +65,11 @@ app.get("/users", async (req, res) => {
     user_password ||= '';
     noshow_count ||= '-1';
     noshow_count = parseInt(noshow_count);
-    isAdmin ||= '';
+    isadmin ||= '';
+    isverified ||= '';
 
 
-    const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count', 'isAdmin'];
+    const validColumns = ['uid', 'fname', 'lname', 'user_level', 'noshow_count', 'isadmin', 'isverified'];
     const validDirections = ['ASC', 'DESC'];
     if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
     if (email != '' && !email.includes('@')) return res.status(400).send('Invalid email');
@@ -72,13 +78,14 @@ app.get("/users", async (req, res) => {
     if (Number.isNaN(user_level)) return res.status(400).send('Invalid user_level');
     if (user_password != '' && user_password.includes(';')) return res.status(400).send('Invalid user_password');
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
-    if (isAdmin !== 'false' && isAdmin !== 'true' && isAdmin !== '') return res.status(400).send('Invalid isAdmin');
+    if (isadmin !== '' && !containsBoolean(isadmin)) return res.status(400).send('Invalid isAdmin');
+    if (isverified !== '' && !containsBoolean(isverified)) return res.status(400).send('Invalid isVerified');
 
     if (!validColumns.includes(column) || !validDirections.includes(direction)) {
         return res.status(400).send('Invalid Column or Direction');
     }
     try {
-        const result = await getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isAdmin);
+        const result = await getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isadmin, isverified);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -319,7 +326,7 @@ app.delete("/sign-ups", async (req, res) => {
  * @returns JSON object of updated user
  */
 app.patch("/users", async (req, res) => {
-    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1' } = req.body;
+    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '' } = req.body;
     uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
@@ -330,23 +337,30 @@ app.patch("/users", async (req, res) => {
     user_password ||= '';
     noshow_count ||= '-1';
     noshow_count = parseInt(noshow_count);
+    isadmin ||= '';
+    isverified ||= '';
+
 
     if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
     if (email != '' && (!email.includes('@') && email != 'email')) return res.status(400).send('Invalid email');
     if (fname != '' && !isValidName(fname)) return res.status(400).send('Invalid first name');
     if (lname != '' && !isValidName(lname)) return res.status(400).send('Invalid last name');
     if (Number.isNaN(user_level) || user_level > 3 || user_level < 0) return res.status(400).send('Invalid user_level');
-    if (user_password != '' && user_password.includes(';'));
+    if (user_password != '' && user_password.includes(';')) return res.status(400).send('Invalid password');
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
+    if (isadmin != '' && !containsBoolean(isadmin)) return res.status(400).send('Invalid isAdmin');
+    if (isverified !== '' && !containsBoolean(isverified)) return res.status(400).send('Invalid isVerified');
 
-    try {
-        var hashed_password = await argon2.hash(user_password);
-    } catch (error) {
-        res.status(500).send(error);
+    if (user_password != '') {
+        try {
+            var hashed_password = await argon2.hash(user_password);
+        } catch (error) {
+            res.status(500).send(error);
+        }
     }
 
     try {
-        const result = await updateUsers(uid, email, fname, lname, user_level, hashed_password, noshow_count);
+        const result = await updateUsers(uid, email, fname, lname, user_level, hashed_password, noshow_count, isadmin, isverified);
         res.send(result)
     } catch (error) {
         console.log(error);
@@ -389,7 +403,7 @@ app.patch("/events", async (req, res) => {
  * Authenticates users
  * Provide email and password of user is request body 
  * as {email: , user_password: }
- * @returns JWT with payload {uid: ,email: , isAdmin: }
+ * @returns JWT with payload {uid: ,email: , isAdmin:, isVerified: }
  */
 app.post("/login", async (req, res) => {
     const { email, user_password } = req.body;
@@ -399,6 +413,7 @@ app.post("/login", async (req, res) => {
     try {
         var result = await getUsers("ASC", "uid", 0, email, "", "", 0, "", 0, "");
     } catch (error) {
+        console.log("from get");
         console.log(error);
         return res.status(500).send(error);
     }
@@ -414,6 +429,7 @@ app.post("/login", async (req, res) => {
                 lname: result[0].lname,
                 email: result[0].email,
                 isAdmin: result[0].isadmin,
+                isVerified: result[0].isverified,
             };
 
             const token = jwt.sign(payload, secretKey, { expiresIn: '1h' });
@@ -424,6 +440,7 @@ app.post("/login", async (req, res) => {
         }
     } catch (err) {
         // internal failure
+        console.log("from argon");
         console.log(err);
         return res.status(500).send(err);
     }
@@ -465,7 +482,7 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
     const mail_configs = {
         from: process.env.MY_EMAIL,
         to: recipient_email,
-        subject: "KODING 101 PASSWORD RECOVERY",
+        subject: "UBCBC PASSWORD RECOVERY",
         html: `<!DOCTYPE html>
 <html lang="en" >
 <head>
@@ -478,10 +495,10 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
 <div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
     <div style="margin:50px auto;width:70%;padding:20px 0">
     <div style="border-bottom:1px solid #eee">
-        <a href="" style="font-size:1.4em;color: #00466a;text-decoration:none;font-weight:600">Koding 101</a>
+        <a href="" style="font-size:1.4em;color: #A9A9A9;text-decoration:none;font-weight:600">UBCBC</a>
     </div>
     <p style="font-size:1.1em">Hi,</p>
-    <p>Thank you for choosing Koding 101. Use the following OTP to complete your Password Recovery Procedure. OTP is valid for 5 minutes</p>
+    <p>Use the following one time code to complete your Password Recovery Procedure. The code is valid for 5 minutes</p>
     <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${OTP}</h2>
     <p style="font-size:0.9em;">Regards,<br />Koding 101</p>
     <hr style="border:none;border-top:1px solid #eee" />
@@ -509,6 +526,68 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
 
 app.post("/send_recovery_email", (req, res) => {
     sendRecoveryEmail(req.body)
+    .then((response) => res.send(response.message))
+    .catch((error) => res.status(500).send(error.message));
+});
+
+
+function sendVerificationEmail({ recipient_email, OTP }) {
+    return new Promise((resolve, reject) => {
+    var transporter = nodemailer.createTransport({
+        host: "smtp-relay.brevo.com",
+        port: 587,
+        auth: {
+        user: "83d6f8001@smtp-brevo.com",
+        pass: "djGE978p12UQHgfD",
+        },
+    });
+    const mail_configs = {
+        from: process.env.MY_EMAIL,
+        to: recipient_email,
+        subject: "UBCBC EMAIL VERIFICATION",
+        html: `<!DOCTYPE html>
+<html lang="en" >
+<head>
+    <meta charset="UTF-8">
+    <title>CodePen - OTP Email Template</title>
+    
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<div style="font-family: Helvetica,Arial,sans-serif;min-width:1000px;overflow:auto;line-height:2">
+    <div style="margin:50px auto;width:70%;padding:20px 0">
+    <div style="border-bottom:1px solid #eee">
+        <a href="" style="font-size:1.4em;color: #A9A9A9;text-decoration:none;font-weight:600">UBCBC</a>
+    </div>
+    <p style="font-size:1.1em">Hi,</p>
+    <p>Use the following one time code to complete your Email Verification Procedure. The code is valid for 5 minutes</p>
+    <h2 style="background: #00466a;margin: 0 auto;width: max-content;padding: 0 10px;color: #fff;border-radius: 4px;">${OTP}</h2>
+    <p style="font-size:0.9em;">Regards,<br />Koding 101</p>
+    <hr style="border:none;border-top:1px solid #eee" />
+    <div style="float:right;padding:8px 0;color:#aaa;font-size:0.8em;line-height:1;font-weight:300">
+        <p>Koding 101 Inc</p>
+        <p>1600 Amphitheatre Parkway</p>
+        <p>California</p>
+    </div>
+    </div>
+</div>
+<!-- partial -->
+    
+</body>
+</html>`,
+    };
+    transporter.sendMail(mail_configs, function (error, info) {
+        if (error) {
+        console.log(error);
+        return reject({ message: `An error has occured` });
+        }
+        return resolve({ message: "Email sent succesfuly" });
+        });
+    });
+}
+
+app.post("/send_verification_email", (req, res) => {
+    sendVerificationEmail(req.body)
     .then((response) => res.send(response.message))
     .catch((error) => res.status(500).send(error.message));
 });

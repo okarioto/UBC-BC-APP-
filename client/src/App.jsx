@@ -11,6 +11,7 @@ import AdminEvent from "./Pages/AdminEvent";
 import BugForm from "./Pages/BugForm";
 import Otp from "./Pages/OTP";
 import ChangePasswordForm from "./Pages/ChangePasswordForm";
+import VerificationOtp from "./Pages/OtpVerification";
 
 export const recoveryContext = createContext();
 
@@ -19,7 +20,6 @@ function App() {
   const [ otp, setOtp ] = useState();
 
   return (
-    // don't really need setOtp
   <recoveryContext.Provider
   value={{email, setEmail, otp, setOtp}}>
     <AuthProvider>
@@ -35,6 +35,7 @@ function App() {
           <Route path="/bug-form" element={<BugForm />} />
           <Route path="/otp" element={<Otp />} />
           <Route path="/change-password" element={<ChangePasswordForm />} />
+          <Route path="/verification-otp" element={<VerificationOtp />} />
         </Routes>
       </Router>
     </AuthProvider>

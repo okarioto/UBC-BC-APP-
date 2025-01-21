@@ -99,18 +99,13 @@ function ChangePasswordForm() {
               className="bg-gray-200 rounded-xl h-[2.5rem] w-full p-3 shadow-lg duration-[5000s]"
             />
           </div>
-          {!pwdSame && !isSuccess && <BlackBtn type="submit" text={`Reset`} />}
-          {(pwdSame || isSuccess) && (
+          {!isSuccess && <BlackBtn type="submit" text={`Reset`} />}
+          {(isSuccess) && (
             <BlackBtn onClick={goToLogin} text="Go To Login" />
           )}
           {isError && (
             <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
               {errorMsg}
-            </p>
-          )}
-          {pwdSame && (
-            <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
-              This password is the same as your current password.
             </p>
           )}
           {isSuccess && (

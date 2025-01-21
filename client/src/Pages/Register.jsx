@@ -72,6 +72,21 @@ export default function Register() {
     return alert('Please enter your email');
   }
 
+  function navigateToVerificationOtp() {
+    if (email) {
+      const OTP = Math.floor(Math.random() * 9000 + 1000);
+      setOtp(OTP);
+
+      axios.post(`${apiUrl}/send_verification_email`, {
+        OTP,
+        recipient_email: email,})
+        .then(navigate("/verification-otp", { state: { email, otp: OTP } }))
+        .catch(console.log);
+        return;
+    } 
+    return alert('Please enter your email');
+  }
+
   return (
     <div className="flex justify-center items-center min-h-screen">
       <div className="w-[80%] max-w-[30rem] flex flex-col items-center mt-10">
@@ -233,8 +248,11 @@ export default function Register() {
           {!userExists && !isSuccess && (
             <BlackBtn type="sumbit" text={isError ? "Try Again" : "Sign Up"} />
           )}
-          {(userExists || isSuccess) && (
-            <BlackBtn onClick={goToLogin} text="Go To Login" />
+          {(userExists) && (
+            <BlackBtn onClick={goToLogin} text="Go to log in" />
+          )}
+          {(isSuccess) && (
+            <BlackBtn type="button" onClick={navigateToVerificationOtp} text="Verify your Email" />
           )}
           {isError && (
             <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
@@ -251,7 +269,7 @@ export default function Register() {
           )}
           {isSuccess && (
             <p className="text-[10px] font-light text-green-700 mt-3 text-center">
-              Success !
+              Please proceed to verify your email!
             </p>
           )}
         </form>

@@ -57,10 +57,6 @@ function LogIn() {
     return alert('Please enter your email');
   }
 
-  function navigateToOtp2() {
-    // navigate("/change-password", {state: {email}});
-    navigate("/otp");
-  }
 
   return (
     <div className="min-h-screen flex justify-center items-center">

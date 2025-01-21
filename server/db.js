@@ -28,7 +28,7 @@ const pool = new pg.Pool({
  * @param {string} isAdmin - admin privellege to get by
  * @returns {Array} Array of user objects
  */
-async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isadmin) {
+async function getUsers(direction, column, uid, email, fname, lname, user_level, user_password, noshow_count, isadmin, isverified) {
     uid ||= 'uid';
     email = email ? "'" + email + "'" : "email";
     fname = fname ? "'" + fname + "'" : "fname";
@@ -37,8 +37,9 @@ async function getUsers(direction, column, uid, email, fname, lname, user_level,
     user_password = user_password ? "'" + user_password + "'" : "user_password";
     noshow_count === -1 && (noshow_count = 'noshow_count');
     isadmin ||= "isadmin";
+    isverified ||= "isverified";
 
-    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} ORDER BY ${column} ${direction}`
+    const query = `SELECT * FROM users WHERE uid = ${uid} AND email = UPPER(${email}) AND fname = UPPER(${fname}) AND lname = UPPER(${lname}) AND user_level = ${user_level} AND user_password = ${user_password} AND noshow_count = ${noshow_count} AND isadmin = ${isadmin} AND isverified = ${isverified} ORDER BY ${column} ${direction}`
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -226,8 +227,10 @@ async function deleteSignUp(uid, eid) {
  * @param {int} user_level - user level to update to 
  * @param {string} user_password - user password to update to
  * @param {int} noshow_count - no show count to update to 
+ * @param {boolean} isadmin - is the user an admin
+ * @param {boolean} isverified is the user verified
  */
-async function updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count) {
+async function updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count, isadmin, isverified) {
     uid ||= 'uid';
     email = email ? "'" + email + "'" : "email";
     fname = fname ? "'" + fname + "'" : "fname";
@@ -239,8 +242,11 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
     } else {
         noshow_count = noshow_count;
     }
+    isadmin ||= "isadmin";
+    isverified ||= "isverified";
+    
 
-    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count} WHERE uid = ${uid} RETURNING *`;
+    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count}, isadmin = ${isadmin}, isverified = ${isverified} WHERE uid = ${uid} RETURNING *`;
     try {
         const result = await pool.query(query);
         return result.rows[0];

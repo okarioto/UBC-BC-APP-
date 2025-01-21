@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { recoveryContext } from "../App";
 import { useRef } from "react";
 import { useLocation } from "react-router-dom";
 import axios from "axios";
@@ -8,7 +7,7 @@ import BlackBtn from "../components/Black_Btn";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
-function Otp() {
+function VerificationOtp() {
   const location = useLocation();
   const [email, setEmail] = useState(
     () => location.state?.email || localStorage.getItem("email") || ""
@@ -19,6 +18,7 @@ function Otp() {
   const [timerCount, setTimer] = React.useState(60);
   const [disable, setDisable] = useState(true);
   const [otpInput, setOtpInput] = useState(new Array(4).fill(""));
+  const [isSuccess, setIsSuccess] = useState(false);
   const inputRefs = useRef([]);
   const navigate = useNavigate();
 
@@ -70,7 +70,7 @@ function Otp() {
   function resendOtp() {
     if (disable) return;
     axios
-      .post(`${apiUrl}/send_recovery_email`, {
+      .post(`${apiUrl}/send_verification_email`, {
         OTP: otp,
         recipient_email: email,
       })
@@ -80,9 +80,23 @@ function Otp() {
       .catch(console.log);
   }
 
-  function verifyOtp() {
+  async function verifyOtp() {
     if (parseInt(otpInput.join("")) === otp) {
-      navigate("/change-password", { state: { ableToChangePwd: true, email } });
+      const user = await axios.get(`${apiUrl}/users`, {
+        params: {
+          email: email,
+        },
+      });
+
+      try {
+       const result = await axios.patch(`${apiUrl}/users`, {
+           uid: user.data[0].uid,
+           isverified: 'true'
+       });
+       setIsSuccess(true);
+     } catch (error) {
+       setIsError(true);
+     }
     } else {
       console.log(parseInt(otpInput.join("")), otp, otpInput);
       alert(
@@ -138,22 +152,32 @@ function Otp() {
             <p onClick={goToLogin} className="mb-3 text-gray-500 mt-5">
               Back
             </p>
-            <BlackBtn onClick={verifyOtp} text={"Verify"} />
-            <p className="mt-4 text-gray-500 mt-5">
-              Didn’t receive code?
-              <a
-                href="#"
-                className=""
-                style={{
-                  color: disable ? "grey" : "#407076",
-                  cursor: disable ? "none" : "pointer",
-                  textDecorationLine: disable ? "none" : "underline",
-                }}
-                onClick={resendOtp}
-              >
-                {disable ? ` Resend code in ${timerCount}s` : ` Resend code`}
-              </a>
-            </p>
+            {isSuccess && (
+              <BlackBtn onClick={goToLogin} text={"Go to log in"} />
+            )}
+            {isSuccess && (
+              <p className="text-[10px] font-light text-green-700 mt-3 text-center">
+                Success!{" "}
+              </p>
+            )}
+            {!isSuccess && <BlackBtn onClick={verifyOtp} text={"Verify"} />}
+            {!isSuccess && (
+              <p className="mt-4 text-gray-500 mt-5">
+                Didn’t receive code?
+                <a
+                  href="#"
+                  className=""
+                  style={{
+                    color: disable ? "grey" : "#407076",
+                    cursor: disable ? "none" : "pointer",
+                    textDecorationLine: disable ? "none" : "underline",
+                  }}
+                  onClick={resendOtp}
+                >
+                  {disable ? ` Resend code in ${timerCount}s` : ` Resend code`}
+                </a>
+              </p>
+            )}
           </div>
         </div>
       </div>
@@ -161,4 +185,4 @@ function Otp() {
   );
 }
 
-export default Otp;
+export default VerificationOtp;
