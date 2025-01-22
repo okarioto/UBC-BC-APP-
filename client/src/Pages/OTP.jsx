@@ -112,7 +112,7 @@ function Otp() {
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
         <div className="text-center max-w-sm">
-          <div className="mb-10 mt-5">
+          <div className="mb-10 mt-[5rem]">
             <h2 className="tracking-wider font-bold text-[#636363] text-2xl mb-3">
               Verify
             </h2>
@@ -134,7 +134,7 @@ function Otp() {
               ))}
             </div>
           </div>
-          <div className="mt-[4rem]">
+          <div className="mt-[2rem]">
             <p onClick={goToLogin} className="mb-3 text-gray-500 mt-5">
               Back
             </p>

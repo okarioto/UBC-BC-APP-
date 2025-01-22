@@ -15,9 +15,9 @@ function ChangePasswordForm() {
   const { ableToChangePwd, email } = location.state || {};
 
 
-  useEffect(() => {
-   if (!ableToChangePwd) navigate(-1);
-  })
+  // useEffect(() => {
+  //  if (!ableToChangePwd) navigate("/");
+  // })
 
   function goToLogin() {
     navigate("/");
