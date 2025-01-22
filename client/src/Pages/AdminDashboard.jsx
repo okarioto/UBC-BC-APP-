@@ -45,6 +45,10 @@ function AdminDashboard() {
   function goToDashboard() {
     navigate("/dashboard");
   }
+  
+  function goToUserLog() {
+    navigate("/user-log");
+  }
 
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
@@ -54,7 +58,7 @@ function AdminDashboard() {
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
           </h3>
-          <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
+          <div className="flex flex-col w-full max-h-[20rem] overflow-scroll">
             {events.upComing.map((evnt) => {
               return (
                 <EventCardSm
@@ -70,7 +74,7 @@ function AdminDashboard() {
           </div>
         </div>
         <div className="flex justify-between w-full mb-5 mt-3">
-          <button className="flex justify-center items-center w-full bg-gray-300 opacity-80 rounded-xl shadow-lg mb-3 hover:opacity-100 duration-300 min-w-[8rem] min-h-[8rem] max-w-[12rem] max-h-[12rem] font-bold text-[14px] text-[#636360] mx-1.5">
+          <button onClick={goToUserLog} className="flex justify-center items-center w-full bg-gray-300 opacity-80 rounded-xl shadow-lg mb-3 hover:opacity-100 duration-300 min-w-[8rem] min-h-[8rem] max-w-[12rem] max-h-[12rem] font-bold text-[14px] text-[#636360] mx-1.5">
             users log
           </button>
           <button className="flex justify-center items-center w-full bg-gray-300 opacity-80 rounded-xl shadow-lg mb-3 hover:opacity-100 duration-300 min-w-[8rem] min-h-[8rem] max-w-[12rem] max-h-[12rem] font-bold text-[14px] text-[#636360] mx-1.5">

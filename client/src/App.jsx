@@ -12,6 +12,7 @@ import BugForm from "./Pages/BugForm";
 import Otp from "./Pages/OTP";
 import ChangePasswordForm from "./Pages/ChangePasswordForm";
 import VerificationOtp from "./Pages/OtpVerification";
+import UserLog from "./Pages/UserLog";
 
 export const recoveryContext = createContext();
 
@@ -36,6 +37,7 @@ function App() {
           <Route path="/otp" element={<Otp />} />
           <Route path="/change-password" element={<ChangePasswordForm />} />
           <Route path="/verification-otp" element={<VerificationOtp />} />
+          <Route path="/user-log" element={<UserLog />} />
         </Routes>
       </Router>
     </AuthProvider>
