@@ -20,45 +20,44 @@ function UserLog() {
   }, [user, loading, navigate]);
 
   useEffect(() => {
-   async function fetchUsers() {
-    try {
-     const result = await axios.get(`${apiUrl}/users`);
-     console.log(result.data);
-     setUsers(result.data);
-    } catch (error) {
-     console.log(error);
+    async function fetchUsers() {
+      try {
+        const result = await axios.get(`${apiUrl}/users`);
+        console.log(result.data);
+        setUsers(result.data);
+      } catch (error) {
+        console.log(error);
+      }
     }
-   }
 
-   fetchUsers();
- }, []);
+    fetchUsers();
+  }, []);
 
   function goToAdminDashboard() {
-   navigate("/admin-dashboard");
+    navigate("/admin-dashboard");
   }
-
-
 
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
-      <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
+      <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-[3rem]">
         <Header message="Welcome to Admin" />
-        <div className="flex flex-col w-full mb-[5rem]">
+        <div className="flex flex-col w-full mb-[2rem]">
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Users
           </h3>
           {/* this is the place for usercardsm */}
-          <div className="flex flex-col w-full max-h-[28rem] overflow-auto">
-          {users.map((usr) => {
-           return (
-            <UserCardSm
-            key={usr.uid}
-            uid={usr.uid}
-            user_name={usr.fname + " " + usr.lname}
-            user_noshow_count={usr.noshow_count}
-            />
-           )
-          })}
+          <div className="flex flex-col w-full max-h-[32rem] overflow-auto">
+            {users.map((usr) => {
+              return (
+                <UserCardSm
+                  key={usr.uid}
+                  uid={usr.uid}
+                  user_name={usr.fname + " " + usr.lname}
+                  user_noshow_count={usr.noshow_count}
+                  user_skill_level={usr.user_level}
+                />
+              );
+            })}
           </div>
         </div>
         <div className="flex flex-col w-full items-center">
