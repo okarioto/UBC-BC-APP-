@@ -326,7 +326,7 @@ app.delete("/sign-ups", async (req, res) => {
  * @returns JSON object of updated user
  */
 app.patch("/users", async (req, res) => {
-    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '' } = req.body;
+    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '', user_notes = ''} = req.body;
     uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
@@ -339,6 +339,7 @@ app.patch("/users", async (req, res) => {
     noshow_count = parseInt(noshow_count);
     isadmin ||= '';
     isverified ||= '';
+    user_notes ||= '';
 
 
     if (Number.isNaN(uid)) return res.status(400).send('Invalid User ID');
@@ -350,7 +351,8 @@ app.patch("/users", async (req, res) => {
     if (Number.isNaN(noshow_count)) return res.status(400).send('Invalid no show count');
     if (isadmin != '' && !containsBoolean(isadmin)) return res.status(400).send('Invalid isAdmin');
     if (isverified !== '' && !containsBoolean(isverified)) return res.status(400).send('Invalid isVerified');
-
+    if (user_notes != '' && user_notes.includes(';')) return res.status(400).send('Notes');
+    
     if (user_password != '') {
         try {
             var hashed_password = await argon2.hash(user_password);
@@ -360,7 +362,7 @@ app.patch("/users", async (req, res) => {
     }
 
     try {
-        const result = await updateUsers(uid, email, fname, lname, user_level, hashed_password, noshow_count, isadmin, isverified);
+        const result = await updateUsers(uid, email, fname, lname, user_level, hashed_password, noshow_count, isadmin, isverified, user_notes);
         res.send(result)
     } catch (error) {
         console.log(error);
@@ -411,7 +413,8 @@ app.post("/login", async (req, res) => {
     if (user_password === '' || user_password.includes(';')) return res.status(400).send('Invalid password');
 
     try {
-        var result = await getUsers("ASC", "uid", 0, email, "", "", 0, "", 0, "");
+        var result = await getUsers("ASC", "uid", 0, email, "", "", 0, "", -1, "");
+        console.log(result);
     } catch (error) {
         console.log("from get");
         console.log(error);

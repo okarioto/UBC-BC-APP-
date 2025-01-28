@@ -230,13 +230,14 @@ async function deleteSignUp(uid, eid) {
  * @param {boolean} isadmin - is the user an admin
  * @param {boolean} isverified is the user verified
  */
-async function updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count, isadmin, isverified) {
+async function updateUsers(uid, email, fname, lname, user_level, user_password, noshow_count, isadmin, isverified, user_notes) {
     uid ||= 'uid';
     email = email ? "'" + email + "'" : "email";
     fname = fname ? "'" + fname + "'" : "fname";
     lname = lname ? "'" + lname + "'" : "lname";
     user_level ||= 'user_level';
     user_password = user_password ? "'" + user_password + "'" : "user_password";
+    user_notes = user_notes ? "'" + user_notes + "'" : "user_notes";
     if (noshow_count === -1) {
         noshow_count = 'noshow_count';
     } else {
@@ -245,8 +246,8 @@ async function updateUsers(uid, email, fname, lname, user_level, user_password, 
     isadmin ||= "isadmin";
     isverified ||= "isverified";
     
-
-    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count}, isadmin = ${isadmin}, isverified = ${isverified} WHERE uid = ${uid} RETURNING *`;
+    const query = `UPDATE users SET email = UPPER(${email}), fname = UPPER(${fname}), lname = UPPER(${lname}), user_level = ${user_level}, user_password = ${user_password}, noshow_count = ${noshow_count}, isadmin = ${isadmin}, isverified = ${isverified}, user_notes = ${user_notes} WHERE uid = ${uid} RETURNING *`;
+    console.log(query);
     try {
         const result = await pool.query(query);
         return result.rows[0];

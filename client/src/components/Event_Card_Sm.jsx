@@ -9,17 +9,6 @@ export default function EventCardSm(props) {
     location.pathname==="/admin-dashboard" && navigate(`/admin-event/${props.eid}`);
   }
 
-  function getColorBySkill(level) {
-    switch (level) {
-      case 1:
-        return "text-[#40A6A6]";
-      case 2:
-        return "text-[#407076]";
-      case 3:
-        return "text-[#BF9AA1]";
-    }
-  }
-
   return (
     <div
       onClick={handleEventClick}

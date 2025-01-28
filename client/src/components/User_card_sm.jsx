@@ -2,6 +2,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function UserCardSm(props) {
+
+  const navigate = useNavigate();
+
   function getColorBySkill(level) {
     switch (level) {
       case 1:
@@ -13,6 +16,10 @@ export default function UserCardSm(props) {
     }
   }
 
+  function handleUserClick() {
+    location.pathname==="/user-log" && navigate(`/user-info/${props.uid}`);
+  }
+
   return (
     <motion.div
       initial={{ opacity: 0, y: -10 }}
@@ -22,7 +29,7 @@ export default function UserCardSm(props) {
       className="flex justify-between items-center p-2 border-b border-gray-200"
     >
       <div
-        // onClick={}
+        onClick={handleUserClick}
         className="flex w-full bg-gray-300 opacity-80 rounded-xl justify-center shadow-lg mb-3 hover:opacity-100 duration-300 cursor-pointer"
       >
         <div className="flex m-2 min-w-[90%]">
