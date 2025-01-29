@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents } from "./db.js"
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents, getWatilist } from "./db.js"
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
@@ -167,6 +167,29 @@ app.get("/sign-ups/count", async (req, res) => {
     }
 })
 
+
+/**
+ * Gets waitlist.
+ * Provide eid in query of request as needed
+ * @returns Array of sign-ups (includes user names) in order of first to last
+ */
+app.get("/waitlist", async (req, res) => {
+    var { eid = '0' } = req.query;
+    eid ||= '0';
+
+    eid = parseInt(eid);
+
+
+    if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
+
+    try {
+        const result = await getWatilist(eid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
 
 /**
  * Inserts new user.
@@ -397,7 +420,6 @@ app.patch("/events", async (req, res) => {
         res.status(500).send(error);
     }
 })
-
 
 /**
  * Authenticates users

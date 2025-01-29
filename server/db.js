@@ -94,7 +94,31 @@ async function getSignUps(uid, eid) {
     const query = `
     SELECT s.uid, s.eid, u.fname, u.lname 
     FROM sign_ups s JOIN users u ON s.uid = u.uid 
-    WHERE s.uid = ${uid} AND s.eid = ${eid}`
+    WHERE s.uid = ${uid} AND s.eid = ${eid} AND s.iswaitlist=FALSE`
+    try {
+        const result = await pool.query(query);
+        return result.rows;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+/* !!! add get waitlist */
+
+/**
+ * Gets waitlist
+ * @requires All imputs are sanitized
+ * @requires Use 0 for arguments as wildcard when needed
+ * @param {int} eid - event ID.
+ * @returns {Array} Array of signup objects (with user names) for certain eid (if specified)
+ */
+async function getWatilist(eid) {
+    eid ||= 's.eid';
+    const query = `
+    SELECT s.uid, s.eid, u.fname, u.lname 
+    FROM sign_ups s JOIN users u ON s.uid = u.uid 
+    WHERE s.eid = ${eid} AND s.iswaitlist=TRUE
+    ORDER BY s.insert_order`
     try {
         const result = await pool.query(query);
         return result.rows;
@@ -337,4 +361,4 @@ async function getUpcomingPastEvents(event_date, event_time) {
 
 
 
-export { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents };
+export { getUsers, getEvents, getSignUps, getWatilist, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents };

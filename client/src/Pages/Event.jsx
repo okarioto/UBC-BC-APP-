@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Socials from "../components/Socials";
 import BlackBtn from "../components/Black_Btn";
-import { useEffect, useState, useContext } from "react";
+import { useEffect, useState, useContext, useCallback } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import EventCardLg from "../components/Event_Card_Lg";
@@ -12,68 +12,72 @@ const apiUrl = import.meta.env.VITE_API_URL;
 export default function Event() {
   const { eid } = useParams();
   const { user, loading } = useContext(AuthContext);
-  const [event, setEvent] = useState([]);
+  const [event, setEvent] = useState(null);
   const [participants, setParticipants] = useState([]);
+  const [waitlist, setWaitlist] = useState([]);
   const [isSignedUp, setIsSignedUp] = useState(false);
+  const [isOnWaitlist, setIsOnWaitlist] = useState(false);
+  const [isFull, setIsFull] = useState(false);
   const [errorState, setErrorState] = useState({
     isError: false,
     errorMsg: "",
   });
-  const [isFull, setIsFull] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
-    !loading && user.uid === 0 && navigate("/login");
+    if (!loading && (!user || user.uid === 0)) {
+      navigate("/login");
+    }
   }, [user, loading, navigate]);
 
   useEffect(() => {
-    document.title = `UBC-BC - Event`;
     async function fetchData() {
       try {
-        const [eventResult, signUpsResult] = await Promise.all([
-          axios.get(`${apiUrl}/events`, { params: { eid: eid } }),
-          axios.get(`${apiUrl}/sign-ups`, { params: { eid: eid } }),
+        const [eventResult, signUpsResult, waitlistResult] = await Promise.all([
+          axios.get(`${apiUrl}/events`, { params: { eid } }),
+          axios.get(`${apiUrl}/sign-ups`, { params: { eid } }),
+          axios.get(`${apiUrl}/waitlist`, { params: { eid } }),
         ]);
-
-        setEvent(eventResult.data[0]);
+        setEvent(eventResult.data[0] || null);
         setParticipants(signUpsResult.data);
+        setWaitlist(waitlistResult.data);
       } catch (error) {
+        console.error("Fetch error:", error);
         setErrorState({
           isError: true,
-          errorMsg:
-            "Something went wrong while fetching data. Please wait a while and try again",
+          errorMsg: "Failed to load event data. Please try again later.",
         });
       }
     }
-    fetchData();
-  }, [eid]);
+    fetchData()
+  }, []);
 
   useEffect(() => {
-    setIsSignedUp(participants.some((p) => p.uid === user.uid));
-  }, [participants, user.uid]);
+    const full = participants.length >= 50;
+    setIsFull(full);
 
-  useEffect(() => {
-    event.count >= 50 ? setIsFull(true) : setIsFull(false);
-  }, [event]);
+    const signedUp = participants.some((p) => p.uid === user?.uid);
+    setIsSignedUp(signedUp);
+
+    const waitlistPos = waitlist.findIndex((u) => u.uid === user?.uid) + 1;
+    setIsOnWaitlist(waitlistPos > 0);
+  }, [participants, waitlist, user?.uid]);
 
   async function withdraw() {
     try {
-      const result = await axios.delete(`${apiUrl}/sign-ups`, {
-        params: { eid: eid, uid: user.uid },
+      await axios.delete(`${apiUrl}/sign-ups`, {
+        params: { eid, uid: user.uid },
       });
-      if (result) {
-        setParticipants(participants.filter((p) => p.uid !== user.uid));
-        setEvent((prevEvent) => {
-          return { ...event, count: prevEvent.count-- };
-        });
-      } else {
-        console.log("delete failed");
-      }
+
+      setParticipants((prev) => prev.filter((p) => p.uid !== user.uid));
+      setWaitlist((prev) => prev.filter((p) => p.uid !== user.uid));
+
+      setTimeout(() => navigate("/dashboard"), 100);
     } catch (error) {
-      console.log(error);
+      console.error("Withdraw error:", error);
       setErrorState({
         isError: true,
-        errorMsg: "Something went wrong while withdrawing. Please try again.",
+        errorMsg: "Failed to withdraw. Please try again.",
       });
     }
   }
@@ -81,21 +85,36 @@ export default function Event() {
   async function signup() {
     try {
       const result = await axios.post(`${apiUrl}/sign-ups`, {
-        eid: eid,
+        eid,
         uid: user.uid,
       });
-      setParticipants([
-        { uid: user.uid, eid: eid, fname: user.fname, lname: user.lname },
-        ...participants,
-      ]);
-      setEvent((prevEvent) => {
-        return { ...event, count: prevEvent.count++ };
-      });
+
+      if (result.data.iswaitlist) {
+        setWaitlist((prev) => [
+          ...prev,
+          {
+            uid: user.uid,
+            eid,
+            fname: user.fname,
+            lname: user.lname,
+          },
+        ]);
+      } else {
+        setParticipants((prev) => [
+          {
+            uid: user.uid,
+            eid,
+            fname: user.fname,
+            lname: user.lname,
+          },
+          ...prev,
+        ]);
+      }
     } catch (error) {
-      console.log(error);
+      console.error("Signup error:", error);
       setErrorState({
         isError: true,
-        errorMsg: "Something went wrong while signing up. Please try again.",
+        errorMsg: "Failed to sign up. Please try again.",
       });
     }
   }
@@ -104,9 +123,13 @@ export default function Event() {
     navigate("/dashboard");
   }
 
+  if (!event) {
+    return <div className="text-center p-8">Loading event...</div>;
+  }
+
   return (
     <div className="flex justify-center items-center w-screen min-h-screen">
-      <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-12 mb-7">
+      <div className="flex flex-col justify-between items-center w-[80%] max-w-[30rem] mt-12 mb-7">
         <Header message="Welcome to UBC-BC" />
 
         <div className="flex flex-col items-center w-full">
@@ -114,7 +137,7 @@ export default function Event() {
             event_name={event.event_name}
             event_location={event.event_location}
             event_time={event.event_time}
-            event_count={event.count}
+            event_count={participants.length}
             event_date={event.event_date}
           />
 
@@ -122,22 +145,20 @@ export default function Event() {
             <h3 className="whitespace-nowrap font-light text-[#636363] text-md mb-2">
               Attendees
             </h3>
-            <div className="flex w-full items-end overflow-scroll">
-              {participants.map((participant) => {
-                return (
-                  <p
-                    key={participant.uid}
-                    className="whitespace-nowrap font-bold text-[#636363] text-xs p-1 mb-4"
-                  >
-                    {participant.fname + " " + participant.lname}
-                  </p>
-                );
-              })}
+            <div className="flex w-full items-end overflow-x-auto h-20">
+              {participants.map((participant) => (
+                <p
+                  key={`participant-${participant.uid}`}
+                  className="whitespace-nowrap font-bold text-[#636363] text-xs p-1 mb-4"
+                >
+                  {`${participant.fname} ${participant.lname}`}
+                </p>
+              ))}
             </div>
           </div>
 
           <div className="flex justify-center w-full mb-3">
-            {isSignedUp && (
+            {(isSignedUp || isOnWaitlist) && (
               <button
                 onClick={withdraw}
                 className="bg-gray-300 text-red-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-red-600 hover:text-white duration-500"
@@ -146,7 +167,7 @@ export default function Event() {
               </button>
             )}
 
-            {!isFull && !isSignedUp && (
+            {!isFull && !isSignedUp && !errorState.isError && (
               <button
                 onClick={signup}
                 className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500"
@@ -161,15 +182,30 @@ export default function Event() {
               {errorState.errorMsg}
             </p>
           )}
-          {isFull && (
-            <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
-              Event is full
-            </p>
+
+          {isFull && !errorState.isError && (
+            <>
+              {!isOnWaitlist && !isSignedUp && (
+                <button
+                  onClick={signup}
+                  className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500 mb-5"
+                >
+                  Join Waitlist
+                </button>
+              )}
+              {isOnWaitlist && (
+                <p className="text-[10px] font-light text-green-600 mb-5 text-center">
+                  You are in position{" "}
+                  {waitlist.findIndex((u) => u.uid === user?.uid) + 1} on the
+                  waitlist
+                </p>
+              )}
+            </>
           )}
 
           <div className="flex flex-col w-full items-center">
             <Socials />
-            <BlackBtn onClick={goToDashboard} text={"Back"} />
+            <BlackBtn onClick={goToDashboard} text="Back" />
           </div>
         </div>
       </div>
