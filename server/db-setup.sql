@@ -10,8 +10,8 @@ lname varchar(255) NOT NULL,
 user_level INT,
 user_password varchar(255) NOT NULL,
 noshow_count INT DEFAULT 0,
-isadmin bool DEFAULT false NOT NULL,
-isverified bool DEFAULT false NOT NULL
+isadmin BOOLEAN DEFAULT false NOT NULL,
+isverified BOOLEAN DEFAULT false NOT NULL
 user_notes TEXT 
 );
 
@@ -26,6 +26,8 @@ event_time time
 CREATE TABLE sign_ups(
     uid INT,
     eid INT,
+    iswaitlist BOOLEAN DEFAULT FALSE,
+    insert_order serial,
     PRIMARY KEY (uid, eid),
     FOREIGN KEY (uid) REFERENCES users(uid) ON DELETE CASCADE,
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
@@ -45,7 +47,7 @@ BEGIN
     WHERE eid = NEW.eid;
 
     IF current_count >= max_sign_ups THEN
-        RAISE EXCEPTION 'Maximum number of sign_ups for eid % exceeded', NEW.eid;
+        NEW.iswaitlist = TRUE;
     END IF;
 
     RETURN NEW;
@@ -57,6 +59,47 @@ CREATE TRIGGER check_max_sign_ups
 BEFORE INSERT ON sign_ups
 FOR EACH ROW
 EXECUTE FUNCTION enforce_max_sign_ups();
+
+
+
+CREATE OR REPLACE FUNCTION add_from_waitlist()
+RETURNS TRIGGER AS $$
+DECLARE
+    max_sign_ups INT := 50; 
+    current_count INT;  
+    waitlisted_uid INT;   
+    isOldOnWaitlist BOOLEAN;  
+BEGIN
+    SELECT COUNT(*) INTO current_count
+    FROM sign_ups
+    WHERE eid = OLD.eid AND iswaitlist=FALSE;
+
+    SELECT iswaitlist INTO isOldOnWaitlist
+    FROM sign_ups
+    WHERE uid = OLD.uid AND eid=OLD.eid;
+
+    IF current_count <= max_sign_ups AND isOldOnWaitlist=FALSE THEN
+        SELECT uid INTO waitlisted_uid
+        FROM sign_ups
+        WHERE eid = OLD.eid AND iswaitlist = TRUE
+        ORDER BY insert_order
+        LIMIT 1;
+
+        IF waitlisted_uid IS NOT NULL  THEN
+            UPDATE sign_ups
+            SET iswaitlist = FALSE
+            WHERE uid = waitlisted_uid AND eid = OLD.eid;
+        END IF;
+    END IF;
+    RETURN OLD;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE TRIGGER check_if_space_available
+BEFORE DELETE ON sign_ups
+FOR EACH ROW
+EXECUTE FUNCTION add_from_waitlist();
 
 
 
@@ -77,7 +120,9 @@ VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, '$argon2id$v=19$m=65536,t=3,p=4$
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
 VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, '$argon2id$v=19$m=65536,t=3,p=4$557yvAllYHulVFE4n/idyw$e0vJLVP/6zU4f66dxK8C52sS0pirG4QnBTChB99BpG0', 0, false, true, "");
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, '$argon2id$v=19$m=65536,t=3,p=4$84GuPhY+7gCAM8iLdYN2uQ$wSMdFD5lWO4MKq0+gyhf06ToxqO3SDZZdxkjXofxgA0', 0, false, true, "");
+VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, '$argon2id$v=19$m=65536,t=3,p=4$84GuPhY+7gCAM8iLdYN2uQ$wSMdFD5lWO4MKq0+gyhf06ToxqO3SDZZdxkjXofxgA0', 0, false, true);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
+VALUES ('10thuser@EMAIL.COM', 'number10', 'number10', 1, '10', 0, false, true);
 
 INSERT INTO events (event_date, event_location, event_time)
 VALUES ('2025-01-01', 'WAR MEMORIAL', '17:30:00');
@@ -142,26 +187,7 @@ VALUES (5,5);
 
 
 --FOR TESTING 50 MAX
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('1@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('2@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('3@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('4@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('5@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('6@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('7@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('8@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('9@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
-INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
-VALUES ('0@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('10EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
@@ -244,13 +270,36 @@ INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count,
 VALUES ('49@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
 VALUES ('50@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('51@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('52@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('53@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('54@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('55@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('56@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('57@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('58@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('59@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('60@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('61@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
+INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin)
+VALUES ('62@EMAIL.COM', 'Test', 'User', 1, 'user1', 0, false);
 
 
 
 
 
-INSERT INTO sign_ups (uid, eid)
-VALUES (9,9);
+
 INSERT INTO sign_ups (uid, eid)
 VALUES (10,9);
 INSERT INTO sign_ups (uid, eid)
@@ -349,6 +398,8 @@ INSERT INTO sign_ups (uid, eid)
 VALUES (57,9);
 INSERT INTO sign_ups (uid, eid)
 VALUES (58,9);
+INSERT INTO sign_ups (uid, eid)
+VALUES (59,9);
 
 
 
