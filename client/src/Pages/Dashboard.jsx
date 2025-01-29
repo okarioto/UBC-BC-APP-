@@ -71,7 +71,7 @@ function Dashboard() {
                   event_name={evnt.event_name}
                   event_time={evnt.event_time}
                   event_date={evnt.event_date}
-                  event_sign_up_count={evnt.count}
+                  event_sign_up_count={evnt.count>50 ? 50:evnt.count}
                 />
               );
             })}
@@ -90,7 +90,7 @@ function Dashboard() {
                   event_name={evnt.event_name}
                   event_time={evnt.event_time}
                   event_date={evnt.event_date}
-                  event_sign_up_count={evnt.count}
+                  event_sign_up_count={evnt.count>50 ? 50 : evnt.count}
                 />
               );
             })}
