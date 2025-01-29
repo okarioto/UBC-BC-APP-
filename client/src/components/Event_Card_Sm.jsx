@@ -1,4 +1,5 @@
 import { useLocation, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 export default function EventCardSm(props) {
   const navigate = useNavigate();
@@ -6,10 +7,11 @@ export default function EventCardSm(props) {
 
   function handleEventClick() {
     location.pathname==="/dashboard" && navigate(`/event/${props.eid}`);
-    location.pathname==="/admin-dashboard" && navigate(`/admin-event/${props.eid}`);
+    (location.pathname==="/admin-dashboard" || location.pathname==="/event-log") && navigate(`/admin-event/${props.eid}`);
   }
 
   return (
+    <motion.div>
     <div
       onClick={handleEventClick}
       className="flex w-full bg-gray-300 opacity-80 rounded-xl justify-center shadow-lg mb-3 hover:opacity-100 duration-300 cursor-pointer"
@@ -33,5 +35,6 @@ export default function EventCardSm(props) {
         </div>
       </div>
     </div>
+    </motion.div>
   );
 }

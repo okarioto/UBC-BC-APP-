@@ -1,6 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { createContext, useContext, useState } from "react";
+import { createContext, useState } from "react";
 import { AuthProvider } from "./context/AuthContext";
 import LogIn from "./Pages/LogIn";
 import Dashboard from "./Pages/Dashboard";
@@ -14,6 +14,8 @@ import ChangePasswordForm from "./Pages/ChangePasswordForm";
 import VerificationOtp from "./Pages/OtpVerification";
 import UserLog from "./Pages/UserLog";
 import User from "./Pages/User";
+import EventLog from "./Pages/EventLog"; 
+
 
 export const recoveryContext = createContext();
 
@@ -40,6 +42,7 @@ function App() {
           <Route path="/verification-otp" element={<VerificationOtp />} />
           <Route path="/user-log" element={<UserLog />} />
           <Route path="/user-info/:uid" element={<User />} />
+          <Route path="/event-log" element={<EventLog />} />
         </Routes>
       </Router>
     </AuthProvider>

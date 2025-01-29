@@ -28,7 +28,6 @@ export default function AdminEvent() {
           axios.get(`${apiUrl}/events`, { params: { eid: eid } }),
           axios.get(`${apiUrl}/sign-ups`, { params: { eid: eid } }),
         ]);
-
         setEvent(eventResult.data[0]);
         setParticipants(signUpsResult.data);
       } catch (error) {
@@ -41,8 +40,8 @@ export default function AdminEvent() {
     fetchData();
   }, [eid]);
 
-  function goToAdminDashboard() {
-    navigate("/admin-dashboard");
+  function back() {
+    navigate(-1);
   }
 
   return (
@@ -87,7 +86,7 @@ export default function AdminEvent() {
           </div>
 
           <div className="flex flex-col w-full items-center mt-5">
-            <BlackBtn onClick={goToAdminDashboard} text={"Back"} />
+            <BlackBtn onClick={back} text={"Back"} />
           </div>
         </div>
       </div>

@@ -21,3 +21,31 @@
     border: none;
     overflow: hidden;
   }
+
+  .event-item-enter {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  .event-item-enter-active {
+    opacity: 1;
+    transform: translateY(0);
+    transition: all 300ms ease;
+  }
+  
+  .event-item-exit {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .event-item-exit-active {
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: all 300ms ease;
+  }
+  
+  /* Smooth scroll container transitions */
+  .overflow-y-auto {
+    scroll-behavior: smooth;
+    transition: max-height 0.3s ease-in-out;
+  }

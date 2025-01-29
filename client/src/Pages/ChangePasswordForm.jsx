@@ -14,7 +14,6 @@ function ChangePasswordForm() {
   const navigate = useNavigate();
   const { ableToChangePwd, email } = location.state || {};
 
-
   // useEffect(() => {
   //  if (!ableToChangePwd) navigate("/");
   // })
@@ -26,11 +25,12 @@ function ChangePasswordForm() {
   async function handleSubmit(event) {
     event.preventDefault();
 
-     const user = await axios.get(`${apiUrl}/users`, {
+    const user = await axios.get(`${apiUrl}/users`, {
       params: {
-       email: email
-      }});
-    
+        email: email,
+      },
+    });
+
     setIsError(false);
     setIsSuccess(false);
     const inputPassword = event.target.user_password.value;
@@ -44,8 +44,8 @@ function ChangePasswordForm() {
 
     try {
       const result = await axios.patch(`${apiUrl}/users`, {
-          uid: user.data[0].uid,
-          user_password: inputPassword 
+        uid: user.data[0].uid,
+        user_password: inputPassword,
       });
       setIsError(false);
       setIsSuccess(true);
@@ -100,9 +100,7 @@ function ChangePasswordForm() {
             />
           </div>
           {!isSuccess && <BlackBtn type="submit" text={`Reset`} />}
-          {(isSuccess) && (
-            <BlackBtn onClick={goToLogin} text="Go To Login" />
-          )}
+          {isSuccess && <BlackBtn onClick={goToLogin} text="Go To Login" />}
           {isError && (
             <p className="text-[10px] font-light text-[#cc0000] mt-3 text-center">
               {errorMsg}

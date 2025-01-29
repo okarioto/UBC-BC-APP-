@@ -216,7 +216,7 @@ export default function User() {
                 {deleteUserAsk && (
                   <button
                     onClick={handleDeleteUser}
-                    className="px-3 py-1 text-sm text-red-600 bg-gray-300 rounded-lg  hover:bg-gray-400 duration-300"
+                    className="px-3 py-1 text-sm font-bold text-red-600 bg-gray-300 rounded-lg  hover:bg-gray-400 duration-300"
                   >
                     Yes
                   </button>
