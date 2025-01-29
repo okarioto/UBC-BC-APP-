@@ -25,7 +25,6 @@ function UserLog() {
     async function fetchUsers() {
       try {
         const result = await axios.get(`${apiUrl}/users`);
-        console.log(result.data);
         setUsers(result.data);
       } catch (error) {
         console.log(error);

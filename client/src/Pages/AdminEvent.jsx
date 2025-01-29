@@ -5,6 +5,7 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import EventCardLg from "../components/Event_Card_Lg";
+import Report_Bug from "../components/Report_Bug";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -86,6 +87,7 @@ export default function AdminEvent() {
           </div>
 
           <div className="flex flex-col w-full items-center mt-5">
+            <Report_Bug/>
             <BlackBtn onClick={back} text={"Back"} />
           </div>
         </div>

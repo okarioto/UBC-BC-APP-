@@ -54,6 +54,10 @@ function AdminDashboard() {
     navigate("/event-log");
   }
 
+  function goToCreateEvent() {
+    navigate("/create-event");
+  }
+
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
@@ -63,9 +67,10 @@ function AdminDashboard() {
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
           </h3>
-          <p className="tracking-wider text-[#407076] font-bold text-xs mb-3">
+          <button onClick={goToCreateEvent}
+          className="tracking-wider text-[#407076] font-bold text-xs mb-3">
             Create event
-          </p>
+          </button>
           </div>
           <div className="flex flex-col w-full max-h-[20rem] overflow-scroll">
             {events.upComing.map((evnt) => {

@@ -15,7 +15,7 @@ import VerificationOtp from "./Pages/OtpVerification";
 import UserLog from "./Pages/UserLog";
 import User from "./Pages/User";
 import EventLog from "./Pages/EventLog"; 
-
+import CreateEvent from "./Pages/CreateEvent";
 
 export const recoveryContext = createContext();
 
@@ -43,6 +43,7 @@ function App() {
           <Route path="/user-log" element={<UserLog />} />
           <Route path="/user-info/:uid" element={<User />} />
           <Route path="/event-log" element={<EventLog />} />
+          <Route path="/create-event" element={<CreateEvent />} />
         </Routes>
       </Router>
     </AuthProvider>

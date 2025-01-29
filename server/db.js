@@ -315,7 +315,7 @@ async function getUpcomingPastEvents(event_date, event_time) {
     const query1 = `
     SELECT e.eid, COUNT(s.uid), event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location 
     FROM events e LEFT JOIN sign_ups s ON e.eid = s.eid
-    WHERE event_date > ${event_date} OR (event_date = ${event_date} AND event_time >= ${event_time})
+    WHERE event_date >= ${event_date} OR (event_date = ${event_date} AND event_time >= ${event_time})
     GROUP BY e.eid
     ORDER BY e.eid ASC`;
     const query2 = `SELECT e.eid, COUNT(s.uid), event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location 

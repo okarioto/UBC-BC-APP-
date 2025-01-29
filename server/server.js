@@ -277,7 +277,7 @@ app.delete("/events/:eid", async (req, res) => {
 });
 
 /**
- * Deletes user.
+ * Deletes user
  * Provide uid of user in request parameter
  * @returns {boolean} True if sucessful delete
  */
