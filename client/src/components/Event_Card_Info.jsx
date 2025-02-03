@@ -1,5 +1,5 @@
 import { useEffect, useState, useContext } from "react";
-export default function EventCardInfo({ formData, handleInputChange, handleSubmit, handleEventDelete }) {
+export default function EventCardInfo({ formData, handleInputChange, handleSubmit, handleEventDelete, oldName, oldLocation }) {
 
  const [isDelete, setIsDelete] = useState(false);
 
@@ -16,9 +16,9 @@ export default function EventCardInfo({ formData, handleInputChange, handleSubmi
             >
               <div className="flex flex-col items-start w-full mb-7">
                 <label className="w-full tracking-wide font-bold text-[#636363] text-sm mb-4">
-                  Name
+                  New name
                   <input
-                    placeholder="Name of event"
+                    placeholder={oldName}
                     type="text"
                     name="name"
                     value={formData.name}
@@ -28,9 +28,9 @@ export default function EventCardInfo({ formData, handleInputChange, handleSubmi
                   />
                 </label>
                 <label className="w-full tracking-wide font-bold text-[#636363] text-sm mb-4">
-                  Location
+                  New location
                   <input
-                    placeholder="Location of Event"
+                    placeholder={oldLocation}
                     type="text"
                     name="location"
                     value={formData.location}
@@ -41,9 +41,8 @@ export default function EventCardInfo({ formData, handleInputChange, handleSubmi
                 </label>
 
                 <label className="w-full tracking-wide font-bold text-[#636363] text-sm mb-4">
-                  Date
+                  New date
                   <input
-                    placeholder="Date of event"
                     type="date"
                     name="date"
                     value={formData.date}
@@ -54,7 +53,7 @@ export default function EventCardInfo({ formData, handleInputChange, handleSubmi
                 </label>
 
                 <label className="w-full tracking-wide font-bold text-[#636363] text-sm mb-4">
-                  Time
+                  New time
                   <input
                     type="time"
                     name="time"

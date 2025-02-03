@@ -253,7 +253,13 @@ function EventLog() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ duration: 0.2 }}
                 >
-                  <EventCardSm {...evnt} />
+                  <EventCardSm 
+                  key={evnt.eid}
+                  eid={evnt.eid}
+                  event_name={evnt.event_name}
+                  event_time={evnt.event_time}
+                  event_date={evnt.event_date}
+                  event_sign_up_count={evnt.count} />
                 </motion.div>
               ))}
             </AnimatePresence>

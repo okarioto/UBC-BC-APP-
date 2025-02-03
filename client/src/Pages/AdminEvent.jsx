@@ -1,7 +1,7 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 import BlackBtn from "../components/Black_Btn";
-import { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import EventCardLg from "../components/Event_Card_Lg";
@@ -11,6 +11,7 @@ import EventCardInfo from "../components/Event_Card_Info";
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default function AdminEvent() {
+  const location = useLocation(); // Add this
   const { eid } = useParams();
   const { user, loading } = useContext(AuthContext);
   const [event, setEvent] = useState([]);
@@ -18,6 +19,7 @@ export default function AdminEvent() {
   const [isEdit, setIsEdit] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const navigate = useNavigate();
+  const [from] = useState(location.state?.from || '/admin-dashboard');
   const [formData, setFormData] = useState({
     name: "",
     location: "",
@@ -85,11 +87,28 @@ export default function AdminEvent() {
   }
 
   function back() {
-    navigate(-1);
+    switch (from) {
+      case "/admin-dashboard":
+        navigate("/admin-dashboard");
+        break;
+      case "/event-log":
+        navigate("/event-log");
+        break;
+      default:
+        navigate("/admin-dashboard");
+    }
+  }
+
+  function editback() {
+    setIsEdit(false);
   }
 
   function handleEdit() {
     setIsEdit(true);
+  }
+
+  function goToEventSignIn() {
+    navigate(`/sign-in/${event.eid}`)
   }
 
   return (
@@ -128,7 +147,8 @@ export default function AdminEvent() {
               </div>
 
               <div className="flex justify-between w-full mb-7 mt-5">
-                <button className="bg-gray-300 text-[#407076] font-bold rounded-xl h-[3rem] w-[40%] min-w-[9rem] shadow-lg hover:bg-[#407076] hover:text-white duration-500">
+                <button onClick={goToEventSignIn}
+                className="bg-gray-300 text-[#407076] font-bold rounded-xl h-[3rem] w-[40%] min-w-[9rem] shadow-lg hover:bg-[#407076] hover:text-white duration-500">
                   Sign In
                 </button>
                 <button
@@ -147,11 +167,14 @@ export default function AdminEvent() {
               handleInputChange={handleInputChange}
               handleSubmit={handleSubmit}
               handleEventDelete={handleEventDelete}
+              oldName={event.event_name}
+              oldLocation={event.event_location}
             />
           )}
           <div className="flex flex-col w-full items-center mt-5">
             <Report_Bug />
-            <BlackBtn onClick={back} text={"Back"} />
+            {isEdit && <BlackBtn onClick={editback} text={"Back"} />}
+            {!isEdit && <BlackBtn onClick={back} text={"Back"} />}
           </div>
         </div>
       </div>

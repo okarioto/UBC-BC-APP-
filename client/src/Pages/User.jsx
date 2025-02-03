@@ -53,8 +53,8 @@ export default function User() {
     }
   }, [userInfo.user_notes]);
 
-  function goToUserLog() {
-    navigate("/user-log");
+  function back() {
+    navigate(-1);
   }
 
   async function handleAdminToggle() {
@@ -131,7 +131,6 @@ export default function User() {
 
   async function handleSaveNotes() {
     try {
-      console.log(localNotes);
       const result = await axios.patch(`${apiUrl}/users`, {
         uid: uid,
         user_notes: localNotes,
@@ -237,7 +236,7 @@ export default function User() {
 
           <div className="flex flex-col w-full items-center">
             <Report_Bug />
-            <BlackBtn onClick={goToUserLog} text={"Back"} />
+            <BlackBtn onClick={back} text={"Back"} />
           </div>
         </div>
       </div>

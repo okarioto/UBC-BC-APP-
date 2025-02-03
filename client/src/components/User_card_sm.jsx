@@ -17,7 +17,7 @@ export default function UserCardSm(props) {
   }
 
   function handleUserClick() {
-    location.pathname==="/user-log" && navigate(`/user-info/${props.uid}`);
+    navigate(`/user-info/${props.uid}`);
   }
 
   return (

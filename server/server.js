@@ -1,5 +1,5 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents, getWatilist } from "./db.js"
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents, getWatilist, getSignedUpUsers, updateAttendance } from "./db.js"
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
@@ -138,6 +138,27 @@ app.get("/sign-ups", async (req, res) => {
 
     try {
         const result = await getSignUps(uid, eid);
+        res.send(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
+
+/**
+ * Gets the users signed up to a specfified event
+ * Provide eid of event in query, where eid >= 1
+ * @returns Array of users signed up to the specified event
+ */
+app.get("/signed-up-users", async (req, res) => {
+    var {eid = '0'} = req.query;
+    eid ||= '0';
+    eid = parseInt(eid);
+
+    if (Number.isNaN(eid)) return res.status(400).send('Invalid Event ID');
+
+    try {
+        const result = await getSignedUpUsers(eid);
         res.send(result);
     } catch (error) {
         console.log(error);
@@ -424,6 +445,40 @@ app.patch("/events", async (req, res) => {
 })
 
 /**
+ * Updates no show counts after an event has ended
+ * provide uid's of users not signed in as an array
+ * @returns Array of JSON objects of updated users
+ */
+app.patch("/attendance", async (req, res) => {
+    const { unsignedUserIds } = req.body;
+
+    if (!Array.isArray(unsignedUserIds)) {
+        return res.status(400).send('Invalid user IDs format');
+    }
+
+    const invalidIds = unsignedUserIds.filter(uid => {
+        const parsed = parseInt(uid);
+        return Number.isNaN(parsed) || parsed <= 0;
+    });
+    
+    if (invalidIds.length > 0) {
+        return res.status(400).send('Contains invalid user IDs');
+    }
+
+    try {
+        const results = [];
+        for (let i = 0; i < unsignedUserIds.length; i++) {
+            const result = await updateAttendance(unsignedUserIds[i]);
+            results.push(result);
+        }
+        res.send(results);
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error);
+    }
+})
+
+/**
  * Authenticates users
  * Provide email and password of user is request body 
  * as {email: , user_password: }
@@ -512,7 +567,7 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
-    <title>CodePen - OTP Email Template</title>
+    <title>OTP Email Template</title>
     
 </head>
 <body>
@@ -574,7 +629,7 @@ function sendVerificationEmail({ recipient_email, OTP }) {
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
-    <title>CodePen - OTP Email Template</title>
+    <title>OTP Email Template</title>
     
 </head>
 <body>

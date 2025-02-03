@@ -7,7 +7,7 @@ export default function EventCardSm(props) {
 
   function handleEventClick() {
     location.pathname==="/dashboard" && navigate(`/event/${props.eid}`);
-    (location.pathname==="/admin-dashboard" || location.pathname==="/event-log") && navigate(`/admin-event/${props.eid}`);
+    (location.pathname==="/admin-dashboard" || location.pathname==="/event-log") && navigate(`/admin-event/${props.eid}`, { state: { from: location.pathname } });
   }
 
   return (

@@ -16,6 +16,7 @@ import UserLog from "./Pages/UserLog";
 import User from "./Pages/User";
 import EventLog from "./Pages/EventLog"; 
 import CreateEvent from "./Pages/CreateEvent";
+import SignIn from "./Pages/SignIn";
 
 export const recoveryContext = createContext();
 
@@ -44,6 +45,7 @@ function App() {
           <Route path="/user-info/:uid" element={<User />} />
           <Route path="/event-log" element={<EventLog />} />
           <Route path="/create-event" element={<CreateEvent />} />
+          <Route path="/sign-in/:eid" element={<SignIn />} />
         </Routes>
       </Router>
     </AuthProvider>
