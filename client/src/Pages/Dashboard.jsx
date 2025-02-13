@@ -11,8 +11,16 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 function Dashboard() {
   const currentDate = new Date();
-  const formattedDate = currentDate.toISOString().split("T")[0];
-  const formattedTime = currentDate.toISOString().split("T")[1].split(".")[0];
+const formattedDate = currentDate.toLocaleDateString("en-CA", {
+  timeZone: "America/Los_Angeles",
+});
+
+// Get PST time (HH:MM:SS)
+const formattedTime = currentDate.toLocaleTimeString("en-GB", {
+  timeZone: "America/Los_Angeles",
+  hour12: false, // Use 24-hour format
+});
+
   const [events, setEvents] = useState({ upComing: [], past: [] });
   const [errorState, setErrorState] = useState({
     isError: false,
