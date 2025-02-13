@@ -181,6 +181,65 @@ async function insertUser(email, fname, lname, user_level, user_password) {
  */
 async function insertEvent(event_date, event_time, event_location, event_name) {
   const query = `INSERT INTO events (event_location, event_time, event_date, event_name) VALUES (UPPER('${event_location}'), '${event_time}', '${event_date}', UPPER('${event_name}')) RETURNING eid, event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location`;
+  console.log(query);
+  try {
+    const result = await pool.query(query);
+    return result.rows[0];
+  } catch (error) {
+    throw new Error(error);
+  }
+}
+
+/**
+ * Inserts default Events
+ * @returns {JSON} The new event object
+ */
+async function insertDefaultEvent() {
+  function getUpcomingDate(targetDay) {
+    const today = new Date();
+    const currentDay = today.getDay();
+    const daysToAdd = (targetDay - currentDay + 7) % 7;
+    const nextDate = new Date(today);
+    nextDate.setDate(today.getDate() + daysToAdd);
+
+    const year = nextDate.getFullYear();
+    const month = String(nextDate.getMonth() + 1).padStart(2, "0");
+    const day = String(nextDate.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+  }
+
+  const nextWednesday = getUpcomingDate(3);
+  const nextFriday = getUpcomingDate(5);
+
+  const defaultWedFormData ={
+    name: "DROP-IN",
+    location: "HARRY OSBORNE",
+    date: nextWednesday,
+    time: "16:30:00",
+  };
+
+  const defaultFriOneFormData = {
+    name: "DROP-IN",
+    location: "HARRY OSBORNE",
+    date: nextFriday,
+    time: "18:30:00",
+  };
+
+  const defaultFriTwoFormData = {
+    name: "DROP-IN",
+    location: "HARRY OSBORNE",
+    date: nextFriday,
+    time: "20:45:00",
+  };
+
+  const query = `
+  INSERT INTO events (event_location, event_time, event_date, event_name) 
+  VALUES (UPPER('${defaultWedFormData.location}'), '${defaultWedFormData.time}', '${defaultWedFormData.date}', UPPER('${defaultWedFormData.name}')),
+  VALUES (UPPER('${defaultFriOneFormData.location}'), '${defaultFriOneFormData.time}', '${defaultFriOneFormData.date}', UPPER('${defaultFriOneFormData.name}')),
+  VALUES (UPPER('${defaultFriTwoFormData.location}'), '${defaultFriTwoFormData.time}', '${defaultFriTwoFormData.date}', UPPER('${defaultFriTwoFormData.name}')) 
+  
+  RETURNING eid, event_name, TO_CHAR(event_date, 'FMMonth DD, YYYY') AS event_date, TO_CHAR(event_time, 'HH:MI AM') as event_time, event_location`;
+
   try {
     const result = await pool.query(query);
     return result.rows[0];
@@ -440,6 +499,7 @@ export {
   insertUser,
   insertEvent,
   insertSignUp,
+  insertDefaultEvent,
   deleteUser,
   deleteEvent,
   deleteSignUp,

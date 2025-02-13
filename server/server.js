@@ -1,10 +1,11 @@
 import express from "express";
-import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents, getWatilist, getSignedUpUsers, updateAttendance } from "./db.js"
+import { getUsers, getEvents, getSignUps, insertUser, insertEvent, insertDefaultEvent, insertSignUp, deleteUser, deleteEvent, deleteSignUp, updateUsers, updateEvent, getEventSignUps, getUpcomingPastEvents, getWatilist, getSignedUpUsers, updateAttendance } from "./db.js"
 import jwt from "jsonwebtoken";
 import argon2 from "argon2";
 import cors from 'cors';
 import env from "dotenv";
 import nodemailer from "nodemailer";
+import cron from "node-cron"
 
 
 
@@ -23,9 +24,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cors(corsOptions));
 app.use((req, res, next) => {
-res.setHeader("Access-Control-Allow-Origin", "*");
-next();
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    next();
 });
+
+cron.schedule("0 0 * * 1", async () => {
+    try {
+        await insertDefaultEvent();
+    } catch (error) {
+        console.log(error);
+    }
+}, {
+    timezone: "America/Vancouver"
+});
+
+
 
 
 app.get("/", (req, res) => {
@@ -151,7 +164,7 @@ app.get("/sign-ups", async (req, res) => {
  * @returns Array of users signed up to the specified event
  */
 app.get("/signed-up-users", async (req, res) => {
-    var {eid = '0'} = req.query;
+    var { eid = '0' } = req.query;
     eid ||= '0';
     eid = parseInt(eid);
 
@@ -172,7 +185,7 @@ app.get("/signed-up-users", async (req, res) => {
  * @returns 8-byte signed int of the number of sign-ups for the specified event
  */
 app.get("/sign-ups/count", async (req, res) => {
-    var {eid} = req.query;
+    var { eid } = req.query;
     eid ||= '0';
     eid = parseInt(eid);
 
@@ -239,9 +252,9 @@ app.post("/register", async (req, res) => {
         const result = await insertUser(email, fname, lname, user_level, hashed_password);
         res.send(result);
     } catch (error) {
-        if(error.cause.code === "23505"){
+        if (error.cause.code === "23505") {
             res.status(404).send("User already exists");
-        }else{
+        } else {
             res.status(500).send("Something went wrong");
         }
     }
@@ -346,7 +359,7 @@ app.delete("/users/:uid", async (req, res) => {
  * @returns {boolean} True if sucessful delete
  */
 app.delete("/sign-ups", async (req, res) => {
-    var { uid="0", eid="0" } = req.query;
+    var { uid = "0", eid = "0" } = req.query;
     uid = parseInt(uid);
     eid = parseInt(eid);
 
@@ -370,7 +383,7 @@ app.delete("/sign-ups", async (req, res) => {
  * @returns JSON object of updated user
  */
 app.patch("/users", async (req, res) => {
-    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '', user_notes = ''} = req.body;
+    var { uid = '0', email = '', fname = '', lname = '', user_level = '0', user_password = '', noshow_count = '-1', isadmin = '', isverified = '', user_notes = '' } = req.body;
     uid ||= '0';
     uid = parseInt(uid);
     email ||= '';
@@ -396,7 +409,7 @@ app.patch("/users", async (req, res) => {
     if (isadmin != '' && !containsBoolean(isadmin)) return res.status(400).send('Invalid isAdmin');
     if (isverified !== '' && !containsBoolean(isverified)) return res.status(400).send('Invalid isVerified');
     if (user_notes != '' && user_notes.includes(';')) return res.status(400).send('Notes');
-    
+
     if (user_password != '') {
         try {
             var hashed_password = await argon2.hash(user_password);
@@ -460,7 +473,7 @@ app.patch("/attendance", async (req, res) => {
         const parsed = parseInt(uid);
         return Number.isNaN(parsed) || parsed <= 0;
     });
-    
+
     if (invalidIds.length > 0) {
         return res.status(400).send('Contains invalid user IDs');
     }
@@ -551,19 +564,19 @@ app.get("/events/upcoming-and-past", async (req, res) => {
 
 function sendRecoveryEmail({ recipient_email, OTP }) {
     return new Promise((resolve, reject) => {
-    var transporter = nodemailer.createTransport({
-        host: "smtp-relay.brevo.com",
-        port: 587,
-        auth: {
-        user: "83d6f8001@smtp-brevo.com",
-        pass: "djGE978p12UQHgfD",
-        },
-    });
-    const mail_configs = {
-        from: process.env.MY_EMAIL,
-        to: recipient_email,
-        subject: "UBCBC PASSWORD RECOVERY",
-        html: `<!DOCTYPE html>
+        var transporter = nodemailer.createTransport({
+            host: "smtp-relay.brevo.com",
+            port: 587,
+            auth: {
+                user: "83d6f8001@smtp-brevo.com",
+                pass: "djGE978p12UQHgfD",
+            },
+        });
+        const mail_configs = {
+            from: process.env.MY_EMAIL,
+            to: recipient_email,
+            subject: "UBCBC PASSWORD RECOVERY",
+            html: `<!DOCTYPE html>
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
@@ -593,39 +606,39 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
     
 </body>
 </html>`,
-    };
-    transporter.sendMail(mail_configs, function (error, info) {
-        if (error) {
-        console.log(error);
-        return reject({ message: `An error has occured` });
-        }
-        return resolve({ message: "Email sent succesfuly" });
+        };
+        transporter.sendMail(mail_configs, function (error, info) {
+            if (error) {
+                console.log(error);
+                return reject({ message: `An error has occured` });
+            }
+            return resolve({ message: "Email sent succesfuly" });
         });
     });
 }
 
 app.post("/send_recovery_email", (req, res) => {
     sendRecoveryEmail(req.body)
-    .then((response) => res.send(response.message))
-    .catch((error) => res.status(500).send(error.message));
+        .then((response) => res.send(response.message))
+        .catch((error) => res.status(500).send(error.message));
 });
 
 
 function sendVerificationEmail({ recipient_email, OTP }) {
     return new Promise((resolve, reject) => {
-    var transporter = nodemailer.createTransport({
-        host: "smtp-relay.brevo.com",
-        port: 587,
-        auth: {
-        user: "83d6f8001@smtp-brevo.com",
-        pass: "djGE978p12UQHgfD",
-        },
-    });
-    const mail_configs = {
-        from: process.env.MY_EMAIL,
-        to: recipient_email,
-        subject: "UBCBC EMAIL VERIFICATION",
-        html: `<!DOCTYPE html>
+        var transporter = nodemailer.createTransport({
+            host: "smtp-relay.brevo.com",
+            port: 587,
+            auth: {
+                user: "83d6f8001@smtp-brevo.com",
+                pass: "djGE978p12UQHgfD",
+            },
+        });
+        const mail_configs = {
+            from: process.env.MY_EMAIL,
+            to: recipient_email,
+            subject: "UBCBC EMAIL VERIFICATION",
+            html: `<!DOCTYPE html>
 <html lang="en" >
 <head>
     <meta charset="UTF-8">
@@ -655,21 +668,21 @@ function sendVerificationEmail({ recipient_email, OTP }) {
     
 </body>
 </html>`,
-    };
-    transporter.sendMail(mail_configs, function (error, info) {
-        if (error) {
-        console.log(error);
-        return reject({ message: `An error has occured` });
-        }
-        return resolve({ message: "Email sent succesfuly" });
+        };
+        transporter.sendMail(mail_configs, function (error, info) {
+            if (error) {
+                console.log(error);
+                return reject({ message: `An error has occured` });
+            }
+            return resolve({ message: "Email sent succesfuly" });
         });
     });
 }
 
 app.post("/send_verification_email", (req, res) => {
     sendVerificationEmail(req.body)
-    .then((response) => res.send(response.message))
-    .catch((error) => res.status(500).send(error.message));
+        .then((response) => res.send(response.message))
+        .catch((error) => res.status(500).send(error.message));
 });
 
 app.listen(port, () => {
