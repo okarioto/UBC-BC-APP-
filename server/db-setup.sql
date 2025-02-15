@@ -11,8 +11,8 @@ user_level INT,
 user_password varchar(255) NOT NULL,
 noshow_count INT DEFAULT 0,
 isadmin BOOLEAN DEFAULT false NOT NULL,
-isverified BOOLEAN DEFAULT false NOT NULL
-user_notes TEXT 
+isverified BOOLEAN DEFAULT false NOT NULL,
+user_notes TEXT DEFAULT ''
 );
 
 CREATE TABLE events (
@@ -33,8 +33,6 @@ CREATE TABLE sign_ups(
     FOREIGN KEY (eid) REFERENCES events(eid) ON DELETE CASCADE
 );
 
-ALTER TABLE users
-ADD user_notes TEXT;
 
 CREATE OR REPLACE FUNCTION enforce_max_sign_ups()
 RETURNS TRIGGER AS $$
@@ -106,19 +104,19 @@ EXECUTE FUNCTION add_from_waitlist();
 
 --PASSWORD IS SAME AS FNAME
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('RIOTO@EMAIL.COM', 'RIOTO', 'OKA', 1, '$argon2id$v=19$m=65536,t=3,p=4$b8GbVXfG+/Zjvg1EaSzrtQ$ux69PKmoQ6W1lxvpqAF3PhTpD3xwG48Zj8bHd6sxbdw', 0, true, true, "");
+VALUES ('RIOTO@EMAIL.COM', 'RIOTO', 'OKA', 1, '$argon2id$v=19$m=65536,t=3,p=4$b8GbVXfG+/Zjvg1EaSzrtQ$ux69PKmoQ6W1lxvpqAF3PhTpD3xwG48Zj8bHd6sxbdw', 0, true, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 3, '$argon2id$v=19$m=65536,t=3,p=4$b0XKD0UPMZxJ0lzdktdr7g$IEjKvqIL7FCY3voQjFawBH+1aYkNtKNLIBcGEURknXE', 0, true, true, "");
+VALUES ('DOM@EMAIL.COM', 'DOM', 'HUANG', 3, '$argon2id$v=19$m=65536,t=3,p=4$b0XKD0UPMZxJ0lzdktdr7g$IEjKvqIL7FCY3voQjFawBH+1aYkNtKNLIBcGEURknXE', 0, true, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('KATHY@EMAIL.COM', 'KATHY', 'NGUYEN', 1, '$argon2id$v=19$m=65536,t=3,p=4$nSiX3FGn2xMUq8c31Bbj0Q$K3yPuToZARsNDpiFVILjySVF/bKBQmBt4JuGyoVAFEM', 0, false, true, "");
+VALUES ('KATHY@EMAIL.COM', 'KATHY', 'NGUYEN', 1, '$argon2id$v=19$m=65536,t=3,p=4$nSiX3FGn2xMUq8c31Bbj0Q$K3yPuToZARsNDpiFVILjySVF/bKBQmBt4JuGyoVAFEM', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 3, '$argon2id$v=19$m=65536,t=3,p=4$MhWwk6RbDs/zlku/4xKSgA$A2DR+612wV9FrKYPHHDLbY2ma7Bx8qWYxeBnGK7BWNk', 0, false, true, "");
+VALUES ('TY@EMAIL.COM', 'TY', 'SEMBA', 3, '$argon2id$v=19$m=65536,t=3,p=4$MhWwk6RbDs/zlku/4xKSgA$A2DR+612wV9FrKYPHHDLbY2ma7Bx8qWYxeBnGK7BWNk', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('KEVIN@EMAIL.COM', 'KEVIN', 'TANG', 2, '$argon2id$v=19$m=65536,t=3,p=4$K349pyr7t1FHPGCS0GjLcg$fmfSEN/xjWNojNPT3v+asmLNl4L4SGxX4qPWbP+s4qU', 0, false, true, "");
+VALUES ('KEVIN@EMAIL.COM', 'KEVIN', 'TANG', 2, '$argon2id$v=19$m=65536,t=3,p=4$K349pyr7t1FHPGCS0GjLcg$fmfSEN/xjWNojNPT3v+asmLNl4L4SGxX4qPWbP+s4qU', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, '$argon2id$v=19$m=65536,t=3,p=4$7Ss9Cf5CuigjRveAzx/vmg$7mJffXRfp16ji7+PAFL0nJmuv7wg4k3HnBlBrcfGl8I', 0, false, true, "");
+VALUES ('ANGUS@EMAIL.COM', 'ANGUS', 'LEUNG', 2, '$argon2id$v=19$m=65536,t=3,p=4$7Ss9Cf5CuigjRveAzx/vmg$7mJffXRfp16ji7+PAFL0nJmuv7wg4k3HnBlBrcfGl8I', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
-VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, '$argon2id$v=19$m=65536,t=3,p=4$557yvAllYHulVFE4n/idyw$e0vJLVP/6zU4f66dxK8C52sS0pirG4QnBTChB99BpG0', 0, false, true, "");
+VALUES ('KELVIN@EMAIL.COM', 'KELVIN', 'LOW', 2, '$argon2id$v=19$m=65536,t=3,p=4$557yvAllYHulVFE4n/idyw$e0vJLVP/6zU4f66dxK8C52sS0pirG4QnBTChB99BpG0', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)
 VALUES ('AUSTIN@EMAIL.COM', 'AUSTIN', 'KOBAYASHI', 1, '$argon2id$v=19$m=65536,t=3,p=4$84GuPhY+7gCAM8iLdYN2uQ$wSMdFD5lWO4MKq0+gyhf06ToxqO3SDZZdxkjXofxgA0', 0, false, true);
 INSERT INTO users (email, fname, lname, user_level, user_password, noshow_count, isAdmin, isVerified)

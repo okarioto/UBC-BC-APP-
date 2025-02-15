@@ -7,7 +7,12 @@ import env from "dotenv";
 import nodemailer from "nodemailer";
 import cron from "node-cron"
 
-
+// const corsOptions = {
+//     origin: "https://ubc-bc-app.vercel.app", 
+//     methods: "GET,POST,PUT,DELETE",
+//     allowedHeaders: ['Content-Type', 'Authorization'],
+//     credentials: true, 
+// };
 
 const corsOptions = {
     origin: 'http://localhost:5173',
