@@ -7,13 +7,11 @@ import env from "dotenv";
 import nodemailer from "nodemailer";
 import cron from "node-cron"
 import path from "path";
+import { fileURLToPath } from 'url';
 
 
 
 const corsOptions = {
-
-
-
   origin: "https://ubc-bc-app-1.onrender.com", // Allow only your frontend
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: ['Content-Type', 'Authorization'],
@@ -24,6 +22,8 @@ env.config();
 const app = express();
 const port = 3000;
 const secretKey = process.env.JWT_KEY
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
