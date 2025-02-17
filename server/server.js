@@ -43,12 +43,13 @@ cron.schedule("0 0 * * 1", async () => {
     timezone: "America/Vancouver"
 });
 
-// // Serve React static files
-// app.use(express.static(path.join(process.cwd(), "client/build"))); // ✅ FIX
+// Serve static files (React's build directory) after building the React app
+app.use(express.static(path.join(__dirname, 'build')));
 
-// app.get("*", (req, res) => {
-//   res.sendFile(path.join(process.cwd(), "client/build", "index.html"));
-// });
+// All other routes should be handled by React Router (the frontend)
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
 
 app.get("/", (req, res) => {
     res.send('Server is running!');;
