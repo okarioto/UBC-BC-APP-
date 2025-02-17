@@ -43,12 +43,12 @@ cron.schedule("0 0 * * 1", async () => {
     timezone: "America/Vancouver"
 });
 
-// Serve React static files
-app.use(express.static(path.join(process.cwd(), "client/build"))); // ✅ FIX
+// // Serve React static files
+// app.use(express.static(path.join(process.cwd(), "client/build"))); // ✅ FIX
 
-app.get("*", (req, res) => {
-  res.sendFile(path.join(process.cwd(), "client/build", "index.html"));
-});
+// app.get("*", (req, res) => {
+//   res.sendFile(path.join(process.cwd(), "client/build", "index.html"));
+// });
 
 app.get("/", (req, res) => {
     res.send('Server is running!');;
