@@ -14,7 +14,7 @@ const corsOptions = {
 
 
 
-  origin: "https://ubc-bc-app.vercel.app", // Allow only your frontend
+  origin: "https://ubc-bc-app-1.onrender.com", // Allow only your frontend
   methods: "GET,POST,PUT,DELETE",
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // If using cookies/sessions
