@@ -44,11 +44,11 @@ cron.schedule("0 0 * * 1", async () => {
 });
 
 // Serve static files from client/dist
-app.use(express.static(path.join(__dirname, '...', 'client', 'dist')));
+app.use(express.static(path.join(__dirname, '..','..' 'client', 'dist')));
 
 // Send the index.html file for any route
 app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, '...', 'client', 'dist', 'index.html'));
+  res.sendFile(path.join(__dirname, '..','..' 'client', 'dist', 'index.html'));
 });
 
 app.get("/", (req, res) => {
