@@ -61,9 +61,11 @@ function AdminDashboard() {
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
+      <div className="fixed top-[5.5rem]">
         <Header message="Welcome to Admin" />
-        <div className="flex flex-col w-full mb-5">
-          <div className="flex justify-between items-center">
+        </div>
+        <div className="flex flex-col w-[75%] max-w-[24rem] fixed top-[13rem]">
+          <div className="flex justify-between items-center mb-2">
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
           </h3>
@@ -72,7 +74,7 @@ function AdminDashboard() {
             Create event
           </button>
           </div>
-          <div className="flex flex-col w-full max-h-[20rem] overflow-scroll">
+          <div className="flex flex-col w-full max-h-[15rem] overflow-scroll">
             {events.upComing.map((evnt) => {
               return (
                 <EventCardSm
@@ -87,7 +89,7 @@ function AdminDashboard() {
             })}
           </div>
         </div>
-        <div className="flex justify-between w-full mb-5 mt-3">
+        <div className="flex justify-between w-[77%] max-w-[24.5rem] fixed top-[34rem]">
           <button onClick={goToUserLog} className="flex justify-center items-center w-full bg-gray-300 opacity-80 rounded-xl shadow-lg mb-3 hover:opacity-100 duration-300 min-w-[8rem] min-h-[8rem] max-w-[12rem] max-h-[12rem] font-bold text-[14px] text-[#636360] mx-1.5">
             users log
           </button>
@@ -98,7 +100,7 @@ function AdminDashboard() {
           </button>
         </div>
 
-        <div className="flex flex-col w-full items-center">
+        <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[45rem]">
           <Report_Bug />
           <BlackBtn onClick={goToDashboard} text={"Back"} />
         </div>

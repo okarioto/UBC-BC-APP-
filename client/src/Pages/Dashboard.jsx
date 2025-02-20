@@ -62,15 +62,22 @@ const formattedTime = currentDate.toLocaleTimeString("en-GB", {
     navigate("/");
   }
 
+  const lowerDivStyle = {
+    position: 'fixed',
+    top: '40rem'
+  };
+
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
+        <div className="fixed top-[5.5rem]">
         <Header message="Welcome to UBC-BC" />
-        <div className="flex flex-col w-full mb-5">
-          <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
+        </div>
+        <div className="flex flex-col w-[75%] max-w-[24rem] fixed top-[13rem]">
+          <h3 className="tracking-wider font-bold text-[#636363] text-md mb-3">
             Upcoming events
           </h3>
-          <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
+          <div className="flex flex-col w-full max-h-[12rem] overflow-scroll mb-6">
             {events.upComing.map((evnt) => {
               return (
                 <EventCardSm
@@ -85,8 +92,8 @@ const formattedTime = currentDate.toLocaleTimeString("en-GB", {
             })}
           </div>
         </div>
-        <div className="flex flex-col w-full mb-5">
-          <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
+        <div className="flex flex-col w-[75%] max-w-[24rem] fixed top-[29.5rem]">
+          <h3 className="tracking-wider font-bold text-[#636363] text- mb-3">
             Previous events
           </h3>
           <div className="flex flex-col w-full max-h-[8rem] overflow-scroll">
@@ -105,7 +112,7 @@ const formattedTime = currentDate.toLocaleTimeString("en-GB", {
           </div>
         </div>
 
-        <div className="flex flex-col w-full items-center">
+        <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[43rem]">
           <Socials />
           {errorState.isError && (
             <p className="text-[10px] font-light text-[#cc0000] mb-5 mt-4 text-center">

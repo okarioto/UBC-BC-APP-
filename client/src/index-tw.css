@@ -49,3 +49,8 @@
     scroll-behavior: smooth;
     transition: max-height 0.3s ease-in-out;
   }
+
+  .small-calendar {
+    transform: scale(0.8); /* Shrinks the calendar */
+    transform-origin: top left; /* Ensures proper positioning */
+  }

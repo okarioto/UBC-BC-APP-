@@ -88,7 +88,9 @@ function LogIn() {
           <p className="text-[12px] text-[#cc0000] mb-3 text-center">
             {errorMsg}
           </p>
+          <div className="w-[75%] max-w-[23rem]">
           <BlackBtn type="submit" text={isError ? "Try Again" : "Log In"} />
+          </div>
           <p onClick={navigateToOtp} className="font-bold text-[#A9A9A9] text-sm mt-3">forgot password</p>
         </form>
         <p className="mb-3 mt-3 text-gray-300">or</p>

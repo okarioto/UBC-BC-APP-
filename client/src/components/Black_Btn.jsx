@@ -3,7 +3,7 @@ export default function BlackBtn(props) {
     <button
       type={props.type}
       onClick={props.onClick}
-      className="bg-black text-white font-bold rounded-xl h-[3rem] w-[75%] shadow-lg hover:bg-opacity-80 duration-500"
+      className="bg-black text-white font-bold rounded-xl h-[3rem] w-full shadow-lg hover:bg-opacity-80 duration-500"
     >
       {props.text}
     </button>

@@ -244,9 +244,10 @@ export default function Register() {
               </li>
             </ul>
           </div>
-
           {!userExists && !isSuccess && (
+            <div className="mt-5 w-full flex items-center justify-center">
             <BlackBtn type="sumbit" text={isError ? "Try Again" : "Sign Up"} />
+            </div>
           )}
           {(userExists) && (
             <BlackBtn onClick={goToLogin} text="Go to log in" />
@@ -273,7 +274,7 @@ export default function Register() {
             </p>
           )}
         </form>
-        <div className="w-32 h-32 mt-4">
+        <div className="w-32 h-32 mt-6 ml-8">
           <img src="/logo.svg" alt="" />
         </div>
       </div>

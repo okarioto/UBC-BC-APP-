@@ -71,7 +71,7 @@ function goToEvent() {
   <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center w-[80%] max-w-[30rem] mt-[3rem]">
         <Header message="Welcome to Admin" />
-        <div className="flex flex-col w-full mb-[1rem]">
+        <div className="flex flex-col w-full mb-[0.25rem]">
           {/* Search Bar */}
           <div className="flex justify-between items-center mb-3">
             <h3 className="tracking-wider font-bold text-[#636363] text-sm">
@@ -86,7 +86,7 @@ function goToEvent() {
             />
           </div>
           {/* User List */}
-          <div className="flex flex-col w-full max-h-[32rem] overflow-auto">
+          <div className="flex flex-col w-full max-h-[30rem] overflow-auto">
             <AnimatePresence>
               {filteredUsers.map((usr) => {
                 return (

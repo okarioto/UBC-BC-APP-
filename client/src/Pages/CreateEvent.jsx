@@ -118,9 +118,11 @@ function CreateEvent() {
   return (
     <div className="flex justify-center items-center w-screen min-h-screen">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-12 mb-7">
-        <Header message="Welcome to Admin" />
+      <div className="fixed top-[5.5rem]">
+          <Header message="Welcome to Admin" />
+        </div>
 
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col items-center w-full mt-[-1.5rem]">
           <div className="flex flex-col items-start w-full mb-7">
             <form
               onSubmit={handleSubmit}
@@ -177,8 +179,7 @@ function CreateEvent() {
                   />
                 </label>
               </div>
-
-              <div className="flex justify-between w-full mb-7 mt-5">
+              <div className="flex justify-between w-full mb-7 mt-2">
                 <button
                   type="submit"
                   className="bg-gray-300 text-[#407076] font-bold rounded-xl h-[3rem] w-[40%] min-w-[9rem] shadow-lg hover:bg-[#407076] hover:text-white duration-500"
@@ -205,8 +206,7 @@ function CreateEvent() {
                   </button>
                 )}
               </div>
-
-              <div className="flex flex-col w-full items-center mt-5">
+              <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[37rem]">
               {defaultEventsAsk && (
                   <p
                     className="text-[10px] font-light text-green-700 mt-3 text-center"
@@ -216,6 +216,8 @@ function CreateEvent() {
                     {" "+ defaultFriTwoFormData.name} at {defaultFriTwoFormData.location} on {defaultFriTwoFormData.date}, {defaultFriTwoFormData.time}?
                   </p>
                 )}
+                </div>
+              <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[45rem]">
                 <Report_Bug />
                 <BlackBtn onClick={goToAdminDashboard} text={"Back"} />
               </div>

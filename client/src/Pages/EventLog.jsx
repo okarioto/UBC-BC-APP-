@@ -96,8 +96,10 @@ function EventLog() {
   return (
     <div className="w-screen min-h-screen flex justify-center items-center">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-7 mb-7">
+      <div className="fixed top-[5.5rem]">
         <Header message="Welcome to Admin" />
-        <div className="flex flex-col w-full mb-5">
+        </div>
+        <div className="flex flex-col w-[75%] max-w-[24rem] fixed top-[10.5rem]">
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Upcoming events
           </h3>
@@ -152,10 +154,12 @@ function EventLog() {
                 }}
                 dateFormat="MMMM dd, yyyy"
                 inline
+                calendarClassName="small-calendar"
               />
             </div>
           )}
-          <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
+          {!showDatePickerUpcoming && (
+            <div className="flex flex-col w-full max-h-[12rem] overflow-scroll">
             <AnimatePresence mode="sync">
               {filteredUpcoming.map((evnt) => (
                 <motion.div
@@ -171,6 +175,7 @@ function EventLog() {
               ))}
             </AnimatePresence>
           </div>
+          )}
           {selectedDateUpcoming && (
             <div className="mb-2">
               <button
@@ -184,7 +189,7 @@ function EventLog() {
         </div>
 
         {/* Past Events Section */}
-        <div className="flex flex-col w-full mb-5">
+        <div className="flex flex-col w-[75%] max-w-[24rem] fixed top-[28rem]">
           <h3 className="tracking-wider font-bold text-[#636363] text-sm mb-3">
             Previous events
           </h3>
@@ -239,10 +244,12 @@ function EventLog() {
                 }}
                 dateFormat="MMMM dd, yyyy"
                 inline
+                calendarClassName="small-calendar"
               />
             </div>
           )}
-          <div className="flex flex-col w-full max-h-[8rem] overflow-scroll">
+          {!showDatePickerPast && (
+            <div className="flex flex-col w-full max-h-[8rem] overflow-scroll">
             <AnimatePresence mode="sync">
               {filteredPast.map((evnt) => (
                 <motion.div
@@ -264,6 +271,7 @@ function EventLog() {
               ))}
             </AnimatePresence>
           </div>
+          )}
           {selectedDatePast && (
             <div className="mb-2">
               <button
@@ -276,7 +284,7 @@ function EventLog() {
           )}
         </div>
 
-        <div className="flex flex-col w-full items-center">
+        <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[45rem]">
           <Report_Bug />
           {errorState.isError && (
             <p className="text-[10px] font-light text-[#cc0000] mb-5 mt-4 text-center">

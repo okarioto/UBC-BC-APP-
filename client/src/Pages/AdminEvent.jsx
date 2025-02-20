@@ -114,12 +114,15 @@ export default function AdminEvent() {
   return (
     <div className="flex justify-center items-center w-screen min-h-screen">
       <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-12 mb-7">
-        <Header message="Welcome to Admin" />
+      <div className="fixed top-[5.5rem]">
+          <Header message="Welcome to Admin" />
+        </div>
+
 
         <div className="flex flex-col items-center w-full">
           {/* from here */}
           {!isEdit && (
-            <div className="flex flex-col items-center w-full">
+            <div className="flex flex-col items-center w-full mt-[-5rem]">
               <EventCardLg
                 event_name={event.event_name}
                 event_location={event.event_location}
@@ -171,7 +174,7 @@ export default function AdminEvent() {
               oldLocation={event.event_location}
             />
           )}
-          <div className="flex flex-col w-full items-center mt-5">
+          <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[45rem]">
             <Report_Bug />
             {isEdit && <BlackBtn onClick={editback} text={"Back"} />}
             {!isEdit && <BlackBtn onClick={back} text={"Back"} />}

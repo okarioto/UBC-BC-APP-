@@ -14,7 +14,7 @@ export default function EventCardSm(props) {
     <motion.div>
     <div
       onClick={handleEventClick}
-      className="flex w-full bg-gray-300 opacity-80 rounded-xl justify-center shadow-lg mb-3 hover:opacity-100 duration-300 cursor-pointer"
+      className="flex w-full bg-gray-300 opacity-80 rounded-xl justify-center shadow-lg mb-3 hover:opacity-100 duration-300 cursor-pointer h-[3.75rem]"
     >
       <div className="flex m-2 min-w-[90%] justify-between ">
         <div className="flex flex-col h-full min-h-[2rem] justify-between">

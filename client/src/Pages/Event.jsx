@@ -49,7 +49,7 @@ export default function Event() {
         });
       }
     }
-    fetchData()
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -130,7 +130,9 @@ export default function Event() {
   return (
     <div className="flex justify-center items-center w-screen min-h-screen">
       <div className="flex flex-col justify-between items-center w-[80%] max-w-[30rem] mt-12 mb-7">
-        <Header message="Welcome to UBC-BC" />
+        <div className="fixed top-[5.5rem]">
+          <Header message="Welcome to UBC-BC" />
+        </div>
 
         <div className="flex flex-col items-center w-full">
           <EventCardLg
@@ -142,14 +144,14 @@ export default function Event() {
           />
 
           <div className="flex flex-col w-full mb-5">
-            <h3 className="whitespace-nowrap font-light text-[#636363] text-md mb-2">
+            <h3 className="whitespace-nowrap font-light text-[#636363] text-md">
               Attendees
             </h3>
-            <div className="flex w-full items-end overflow-x-auto h-20">
+            <div className="flex w-full items-end overflow-x-auto h-20 mt-[-.5rem]">
               {participants.map((participant) => (
                 <p
                   key={`participant-${participant.uid}`}
-                  className="whitespace-nowrap font-bold text-[#636363] text-xs p-1 mb-4"
+                  className="whitespace-nowrap font-bold text-[#636363] text-xs p-1 mb-8"
                 >
                   {`${participant.fname} ${participant.lname}`}
                 </p>
@@ -157,7 +159,7 @@ export default function Event() {
             </div>
           </div>
 
-          <div className="flex justify-center w-full mb-3">
+          <div className="flex justify-center w-full mt-[-1rem] mb-[6rem]">
             {(isSignedUp || isOnWaitlist) && (
               <button
                 onClick={withdraw}
@@ -175,35 +177,33 @@ export default function Event() {
                 Sign Up
               </button>
             )}
+            {errorState.isError && (
+              <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
+                {errorState.errorMsg}
+              </p>
+            )}
+
+            {isFull && !errorState.isError && (
+              <>
+                {!isOnWaitlist && !isSignedUp && (
+                  <button
+                    onClick={signup}
+                    className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500 mb-5"
+                  >
+                    Join Waitlist
+                  </button>
+                )}
+                {isOnWaitlist && (
+                  <p className="text-[10px] font-light text-green-600 mb-5 text-center">
+                    You are in position{" "}
+                    {waitlist.findIndex((u) => u.uid === user?.uid) + 1} on the
+                    waitlist
+                  </p>
+                )}
+              </>
+            )}
           </div>
-
-          {errorState.isError && (
-            <p className="text-[10px] font-light text-[#cc0000] mb-5 text-center">
-              {errorState.errorMsg}
-            </p>
-          )}
-
-          {isFull && !errorState.isError && (
-            <>
-              {!isOnWaitlist && !isSignedUp && (
-                <button
-                  onClick={signup}
-                  className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500 mb-5"
-                >
-                  Join Waitlist
-                </button>
-              )}
-              {isOnWaitlist && (
-                <p className="text-[10px] font-light text-green-600 mb-5 text-center">
-                  You are in position{" "}
-                  {waitlist.findIndex((u) => u.uid === user?.uid) + 1} on the
-                  waitlist
-                </p>
-              )}
-            </>
-          )}
-
-          <div className="flex flex-col w-full items-center">
+          <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[43rem]">
             <Socials />
             <BlackBtn onClick={goToDashboard} text="Back" />
           </div>
