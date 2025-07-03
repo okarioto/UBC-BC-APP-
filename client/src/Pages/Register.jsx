@@ -253,7 +253,6 @@ export default function Register() {
             <BlackBtn onClick={goToLogin} text="Go to log in" />
           )}
           {(isSuccess) && (
-            // <BlackBtn type="button" onClick={navigateToVerificationOtp} text="Verify your Email" />
             navigateToVerificationOtp()
           )}
           {isError && (
