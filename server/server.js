@@ -573,8 +573,8 @@ function sendRecoveryEmail({ recipient_email, OTP }) {
             host: "smtp-relay.brevo.com",
             port: 587,
             auth: {
-                user: "83d6f8001@smtp-brevo.com",
-                pass: "djGE978p12UQHgfD",
+                user: "9137c3002@smtp-brevo.com",
+                pass: "J963mtrR7I8HKxy1",
             },
         });
         const mail_configs = {
@@ -635,8 +635,8 @@ function sendVerificationEmail({ recipient_email, OTP }) {
             host: "smtp-relay.brevo.com",
             port: 587,
             auth: {
-                user: "83d6f8001@smtp-brevo.com",
-                pass: "djGE978p12UQHgfD",
+                user: "9137c3002@smtp-brevo.com",
+                pass: "J963mtrR7I8HKxy1",
             },
         });
         const mail_configs = {

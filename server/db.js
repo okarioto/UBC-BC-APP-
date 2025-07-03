@@ -10,9 +10,9 @@ const pool = new pg.Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASSWORD,
   port: process.env.DB_PORT, 
-  ssl: {
-    rejectUnauthorized: false, // Allows self-signed SSL certs (needed for Render)
-  },
+  // ssl: {
+  //   rejectUnauthorized: false, // Allows self-signed SSL certs (needed for Render)
+  // },
 });
 /**
  * Get users

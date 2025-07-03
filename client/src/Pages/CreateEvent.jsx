@@ -206,7 +206,7 @@ function CreateEvent() {
                   </button>
                 )}
               </div>
-              <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[37rem]">
+              <div className="flex flex-col w-[65%] max-w-[20rem] items-center top-[37rem]">
               {defaultEventsAsk && (
                   <p
                     className="text-[10px] font-light text-green-700 mt-3 text-center"

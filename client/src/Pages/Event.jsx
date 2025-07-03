@@ -147,11 +147,11 @@ export default function Event() {
             <h3 className="whitespace-nowrap font-light text-[#636363] text-md">
               Attendees
             </h3>
-            <div className="flex w-full items-end overflow-x-auto h-20 mt-[-.5rem]">
+            <div className="flex w-full items-end overflow-x-auto h-10 mt-[-.5rem]">
               {participants.map((participant) => (
                 <p
                   key={`participant-${participant.uid}`}
-                  className="whitespace-nowrap font-bold text-[#636363] text-xs p-1 mb-8"
+                  className="whitespace-nowrap font-bold text-[#636363] text-xs p-1"
                 >
                   {`${participant.fname} ${participant.lname}`}
                 </p>
@@ -159,7 +159,7 @@ export default function Event() {
             </div>
           </div>
 
-          <div className="flex justify-center w-full mt-[-1rem] mb-[6rem]">
+          <div className="flex justify-center w-full mb-[2rem]">
             {(isSignedUp || isOnWaitlist) && (
               <button
                 onClick={withdraw}
@@ -182,26 +182,27 @@ export default function Event() {
                 {errorState.errorMsg}
               </p>
             )}
-
-            {isFull && !errorState.isError && (
-              <>
-                {!isOnWaitlist && !isSignedUp && (
-                  <button
-                    onClick={signup}
-                    className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500 mb-5"
-                  >
-                    Join Waitlist
-                  </button>
-                )}
-                {isOnWaitlist && (
-                  <p className="text-[10px] font-light text-green-600 mb-5 text-center">
-                    You are in position{" "}
-                    {waitlist.findIndex((u) => u.uid === user?.uid) + 1} on the
-                    waitlist
-                  </p>
-                )}
-              </>
-            )}
+          </div>
+          <div>
+          {isFull && !errorState.isError && (
+            <>
+              {!isOnWaitlist && !isSignedUp && (
+                <button
+                  onClick={signup}
+                  className="bg-gray-300 text-green-600 font-bold rounded-xl h-[3rem] w-[40%] min-w-[10rem] shadow-lg hover:bg-green-600 hover:text-white duration-500 mb-5"
+                >
+                  Join Waitlist
+                </button>
+              )}
+              {isOnWaitlist && (
+                <p className="text-[10px] font-light text-green-600 mb-5 text-center">
+                  You are in position{" "}
+                  {waitlist.findIndex((u) => u.uid === user?.uid) + 1} on the
+                  waitlist
+                </p>
+              )}
+            </>
+          )}
           </div>
           <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[43rem]">
             <Socials />
