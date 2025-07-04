@@ -117,8 +117,8 @@ function CreateEvent() {
 
   return (
     <div className="flex justify-center items-center w-screen min-h-screen">
-      <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-12 mb-7">
-      <div className="fixed top-[5.5rem]">
+      <div className="flex flex-col justify-between items-center  w-[80%] max-w-[30rem] mt-12 mb-7 relative">
+      <div className="sticky top-0 z-10">
           <Header message="Welcome to Admin" />
         </div>
 
@@ -217,7 +217,7 @@ function CreateEvent() {
                   </p>
                 )}
                 </div>
-              <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[45rem]">
+              <div className="flex flex-col w-[65%] max-w-[20rem] items-center relative sticky mt-3 z-10">
                 <Report_Bug />
                 <BlackBtn onClick={goToAdminDashboard} text={"Back"} />
               </div>

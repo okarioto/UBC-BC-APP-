@@ -128,13 +128,13 @@ export default function Event() {
   }
 
   return (
-    <div className="flex justify-center items-center w-screen min-h-screen">
-      <div className="flex flex-col justify-between items-center w-[80%] max-w-[30rem] mt-12 mb-7">
-        <div className="fixed top-[5.5rem]">
+    <div className="flex justify-center items-center w-screen min-h-screen overflow-y-scroll">
+      <div className="flex flex-col justify-between items-center w-[80%] max-w-[30rem] mt-12 mb-7 relative">
+        <div className="sticky top-0">
           <Header message="Welcome to UBC-BC" />
         </div>
-
-        <div className="flex flex-col items-center w-full">
+        <div className="flex flex-col w-full relative">
+          <div className="sticky top-0 z-10">
           <EventCardLg
             event_name={event.event_name}
             event_location={event.event_location}
@@ -142,12 +142,17 @@ export default function Event() {
             event_count={participants.length}
             event_date={event.event_date}
           />
+          </div>
+          </div>
 
-          <div className="flex flex-col w-full mb-5">
+          <div className="flex flex-col items-center w-full relative">
+          <div className="flex flex-col w-full mb-5 relative">
+          <div className="sticky top-0 z-10">
             <h3 className="whitespace-nowrap font-light text-[#636363] text-md">
               Attendees
             </h3>
-            <div className="flex w-full items-end overflow-x-auto h-10 mt-[-.5rem]">
+            </div>
+            <div className="flex w-full items-end overflow-x-auto h-10 mt-[.25rem]">
               {participants.map((participant) => (
                 <p
                   key={`participant-${participant.uid}`}
@@ -159,6 +164,7 @@ export default function Event() {
             </div>
           </div>
 
+          <div className="sticky top-10 z-10">
           <div className="flex justify-center w-full mb-[2rem]">
             {(isSignedUp || isOnWaitlist) && (
               <button
@@ -204,11 +210,12 @@ export default function Event() {
             </>
           )}
           </div>
-          <div className="flex flex-col w-[65%] max-w-[20rem] items-center fixed top-[43rem]">
+          </div>
+          <div className="flex flex-col w-[65%] max-w-[20rem] items-center relative">
             <Socials />
             <BlackBtn onClick={goToDashboard} text="Back" />
           </div>
-        </div>
+          </div>  
       </div>
     </div>
   );
