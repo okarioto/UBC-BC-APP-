@@ -8,7 +8,7 @@ import nodemailer from "nodemailer";
 import cron from "node-cron"
 
 const corsOptions = {
-    origin: 'https://ubc-bc.netlify.app/',
+    origin: 'https://ubc-bc.netlify.app',
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
 };
